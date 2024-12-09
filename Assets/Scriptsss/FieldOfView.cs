@@ -6,6 +6,7 @@ using UnityEngine;
 public class FieldOfView : MonoBehaviour
 {
     [SerializeField] private Material _VisionConeMaterial;
+    [SerializeField] private Transform _Parent; //Used for rotation
     [SerializeField] private float _VisionRange;
     [SerializeField] private float _VisionAngle;
     [SerializeField] private LayerMask _VisionObstructingLayer; //layer with objects that obstruct the enemy view, like walls, for example
@@ -13,6 +14,10 @@ public class FieldOfView : MonoBehaviour
     
     private Mesh _VisionConeMesh;
     private MeshFilter _meshFilter;
+
+    private Vector3 _newRotation;
+    [SerializeField] private float lerpDuration;
+    private CharacterDirection _currentDirection;
 
     //private Quaternion _leftRotation = Quaternion.Euler(0, 0, 90);
     //private Quaternion _rightRotation = Quaternion.Euler(0, 0, 270);
@@ -80,25 +85,57 @@ public class FieldOfView : MonoBehaviour
         _meshFilter.mesh = _VisionConeMesh;
     }
 
-    //public void ChangeViewDirection(WayPoint referencePoint)
-    //{
-    //    switch (referencePoint.CharacterDirection)
-    //    {
-    //        case CharacterDirection.Left:
-    //            transform.rotation = _leftRotation;
-    //            break;
+    public void ChangeViewDirection(WayPoint referencePoint)
+    {
+        if (_currentDirection == referencePoint.CharacterDirection)
+            return;
 
-    //        case CharacterDirection.Right:
-    //            transform.rotation = _rightRotation;
-    //            break;
+        StopLerpCoroutine();
+        Debug.Log("ChangeViewDirection");
 
-    //        case CharacterDirection.Up:
-    //            transform.rotation = _upRotation;
-    //            break;
+        switch (referencePoint.CharacterDirection)
+        {
+            case CharacterDirection.Left:
+                StartCoroutine(RotationLerp(referencePoint.TargetRotation));
+                _currentDirection = CharacterDirection.Left;
+                break;
 
-    //        case CharacterDirection.Down:
-    //            transform.rotation = _downRotation;
-    //            break;
-    //    }
-    //}
+            case CharacterDirection.Right:
+                StartCoroutine(RotationLerp(referencePoint.TargetRotation));
+                _currentDirection = CharacterDirection.Right;
+                break;
+
+            case CharacterDirection.Up:
+                StartCoroutine(RotationLerp(referencePoint.TargetRotation));
+                _currentDirection = CharacterDirection.Up;
+                break;
+
+            case CharacterDirection.Down:
+                StartCoroutine(RotationLerp(referencePoint.TargetRotation));
+                _currentDirection = CharacterDirection.Down;
+                break;
+        }
+    }
+
+    private void StopLerpCoroutine()
+    {
+        StopAllCoroutines();
+    }
+
+    public IEnumerator RotationLerp(Vector3 targetRotation)
+    {
+        float timeElapsed = 0;
+
+        while (timeElapsed < lerpDuration)
+        {
+            var zLerp = Mathf.Lerp(_Parent.transform.rotation.z, targetRotation.z, timeElapsed / lerpDuration);
+            _newRotation = new Vector3(_Parent.transform.rotation.x, _Parent.transform.rotation.y, zLerp);
+            _Parent.transform.rotation = Quaternion.Euler(_newRotation);
+            timeElapsed += Time.deltaTime;
+            Debug.Log("timeElapsed " + timeElapsed + "rotation " + _newRotation + " Quaternion " + _Parent.transform.rotation);
+            yield return null;
+        }
+
+        _Parent.transform.rotation = Quaternion.Euler(targetRotation);
+    }
 }

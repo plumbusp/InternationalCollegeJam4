@@ -13,5 +13,7 @@ public enum CharacterDirection
 public class WayPoint : MonoBehaviour
 {
     [SerializeField] private CharacterDirection _characterDirection;
+    [SerializeField] private Vector3 _TargetRotation;
     public CharacterDirection CharacterDirection {  get { return _characterDirection; } }
+    public Vector3 TargetRotation {  get { return _TargetRotation; } }
 }

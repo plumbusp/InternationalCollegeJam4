@@ -36,6 +36,7 @@ public class EnemyMovement : MonoBehaviour
         }
         nextPoint = GetNextWayPoint();
         Rotate(nextPoint);
+        _EnemyFieldOfView.ChangeViewDirection(nextPoint);
     }
 
     private void Update()
@@ -63,23 +64,13 @@ public class EnemyMovement : MonoBehaviour
                nextPoint.transform.position,
                moveSpeed * Time.deltaTime);
 
-            //Rotating object to look in the directin of next Pos 
-            var direction = transform.position - nextPoint.transform.position;
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            var newAngle = Quaternion.AngleAxis(angle, transform.forward).eulerAngles;
-
-            _currentAngle = new Vector3(
-                    Mathf.LerpAngle(_currentAngle.x, newAngle.x, Time.deltaTime),
-                    Mathf.LerpAngle(_currentAngle.y, newAngle.y, Time.deltaTime),
-                    Mathf.LerpAngle(_currentAngle.z, newAngle.z, Time.deltaTime));
-
-            transform.eulerAngles = new Vector3(Mathf.LerpAngle(_currentAngle.x, newAngle.x, Time.deltaTime), transform.rotation.y, transform.rotation.z);
         }
         else
         {
             transform.position = nextPoint.transform.position;
             nextPoint = GetNextWayPoint();
             Rotate(nextPoint);
+            _EnemyFieldOfView.ChangeViewDirection(nextPoint);
         }
     }
 
