@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class FieldOfView : MonoBehaviour
 {
@@ -15,9 +16,10 @@ public class FieldOfView : MonoBehaviour
     private Mesh _VisionConeMesh;
     private MeshFilter _meshFilter;
 
-    private Vector3 _newRotation;
-    [SerializeField] private float lerpDuration;
-    private CharacterDirection _currentDirection;
+    Transform _lookAt;
+    //private Vector3 _newRotation;
+    [SerializeField] private float lerpSppeed;
+    //private CharacterDirection _currentDirection;
 
     //private Quaternion _leftRotation = Quaternion.Euler(0, 0, 90);
     //private Quaternion _rightRotation = Quaternion.Euler(0, 0, 270);
@@ -40,10 +42,19 @@ public class FieldOfView : MonoBehaviour
         _VisionAngle *= Mathf.Deg2Rad;
     }
 
-
     void Update()
     {
         DrawVisionCone();//calling the vision cone function everyframe just so the cone is updated every frame
+        if(_lookAt == null)
+        {
+            Debug.LogError(_lookAt + " Cant Be null!!!");
+            return;
+        }
+        //    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(_lookAt.position), lerpSppeed * Time.deltaTime);
+        //        var zLerp = Mathf.Lerp(_Parent.transform.rotation.z, targetRotation.z, timeElapsed / lerpDuration);
+        //        _newRotation = new Vector3(_Parent.transform.rotation.x, _Parent.transform.rotation.y, zLerp);
+        //        _Parent.transform.rotation = Quaternion.Euler(_newRotation);
+        //        timeElapsed += Time.deltaTime;
     }
 
     void DrawVisionCone()//this method creates the vision cone mesh
@@ -58,8 +69,8 @@ public class FieldOfView : MonoBehaviour
         {
             Sine = Mathf.Sin(Currentangle);
             Cosine = Mathf.Cos(Currentangle);
-            Vector3 RaycastDirection = (transform.up * Cosine) + (transform.right * Sine);
-            Vector3 VertForward = (Vector3.up * Cosine) + (Vector3.right * Sine);
+            Vector3 RaycastDirection = (transform.up * Cosine) + (transform.forward * Sine);
+            Vector3 VertForward = (Vector3.up * Cosine) + (Vector3.forward * Sine);
             RaycastHit2D raycastHit = Physics2D.Raycast(transform.position, RaycastDirection, _VisionRange, _VisionObstructingLayer);
             if (raycastHit)
             {
@@ -87,55 +98,61 @@ public class FieldOfView : MonoBehaviour
 
     public void ChangeViewDirection(WayPoint referencePoint)
     {
-        if (_currentDirection == referencePoint.CharacterDirection)
-            return;
-
-        StopLerpCoroutine();
-        Debug.Log("ChangeViewDirection");
-
-        switch (referencePoint.CharacterDirection)
-        {
-            case CharacterDirection.Left:
-                StartCoroutine(RotationLerp(referencePoint.TargetRotation));
-                _currentDirection = CharacterDirection.Left;
-                break;
-
-            case CharacterDirection.Right:
-                StartCoroutine(RotationLerp(referencePoint.TargetRotation));
-                _currentDirection = CharacterDirection.Right;
-                break;
-
-            case CharacterDirection.Up:
-                StartCoroutine(RotationLerp(referencePoint.TargetRotation));
-                _currentDirection = CharacterDirection.Up;
-                break;
-
-            case CharacterDirection.Down:
-                StartCoroutine(RotationLerp(referencePoint.TargetRotation));
-                _currentDirection = CharacterDirection.Down;
-                break;
-        }
+        _lookAt = referencePoint.transform;
     }
+    
 
-    private void StopLerpCoroutine()
-    {
-        StopAllCoroutines();
-    }
+    //public void ChangeViewDirection(WayPoint referencePoint)
+    //{
+    //    if (_currentDirection == referencePoint.CharacterDirection)
+    //        return;
 
-    public IEnumerator RotationLerp(Vector3 targetRotation)
-    {
-        float timeElapsed = 0;
+    //    StopLerpCoroutine();
+    //    Debug.Log("ChangeViewDirection");
 
-        while (timeElapsed < lerpDuration)
-        {
-            var zLerp = Mathf.Lerp(_Parent.transform.rotation.z, targetRotation.z, timeElapsed / lerpDuration);
-            _newRotation = new Vector3(_Parent.transform.rotation.x, _Parent.transform.rotation.y, zLerp);
-            _Parent.transform.rotation = Quaternion.Euler(_newRotation);
-            timeElapsed += Time.deltaTime;
-            Debug.Log("timeElapsed " + timeElapsed + "rotation " + _newRotation + " Quaternion " + _Parent.transform.rotation);
-            yield return null;
-        }
+    //    switch (referencePoint.CharacterDirection)
+    //    {
+    //        case CharacterDirection.Left:
+    //            StartCoroutine(RotationLerp(referencePoint.TargetRotation));
+    //            _currentDirection = CharacterDirection.Left;
+    //            break;
 
-        _Parent.transform.rotation = Quaternion.Euler(targetRotation);
-    }
+    //        case CharacterDirection.Right:
+    //            StartCoroutine(RotationLerp(referencePoint.TargetRotation));
+    //            _currentDirection = CharacterDirection.Right;
+    //            break;
+
+    //        case CharacterDirection.Up:
+    //            StartCoroutine(RotationLerp(referencePoint.TargetRotation));
+    //            _currentDirection = CharacterDirection.Up;
+    //            break;
+
+    //        case CharacterDirection.Down:
+    //            StartCoroutine(RotationLerp(referencePoint.TargetRotation));
+    //            _currentDirection = CharacterDirection.Down;
+    //            break;
+    //    }
+    //}
+
+    //private void StopLerpCoroutine()
+    //{
+    //    StopAllCoroutines();
+    //}
+
+    //public IEnumerator RotationLerp(Vector3 targetRotation)
+    //{
+    //    float timeElapsed = 0;
+
+    //    while (timeElapsed < lerpDuration)
+    //    {
+    //        var zLerp = Mathf.Lerp(_Parent.transform.rotation.z, targetRotation.z, timeElapsed / lerpDuration);
+    //        _newRotation = new Vector3(_Parent.transform.rotation.x, _Parent.transform.rotation.y, zLerp);
+    //        _Parent.transform.rotation = Quaternion.Euler(_newRotation);
+    //        timeElapsed += Time.deltaTime;
+    //        Debug.Log("timeElapsed " + timeElapsed + "rotation " + _newRotation + " Quaternion " + _Parent.transform.rotation);
+    //        yield return null;
+    //    }
+
+    //    _Parent.transform.rotation = Quaternion.Euler(targetRotation);
+    //}
 }

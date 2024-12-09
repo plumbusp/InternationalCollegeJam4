@@ -212,6 +212,10 @@ PrefabInstance:
       value: WayPoint (7)
       objectReference: {fileID: 0}
     - target: {fileID: 7358939257714301288, guid: 2da44351c42e20a4380db04b41c2640a, type: 3}
+      propertyPath: _TargetRotation.z
+      value: 270
+      objectReference: {fileID: 0}
+    - target: {fileID: 7358939257714301288, guid: 2da44351c42e20a4380db04b41c2640a, type: 3}
       propertyPath: _characterDirection
       value: 1
       objectReference: {fileID: 0}
@@ -271,6 +275,10 @@ PrefabInstance:
     - target: {fileID: 3370751311996885007, guid: 2da44351c42e20a4380db04b41c2640a, type: 3}
       propertyPath: m_Name
       value: WayPoint (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7358939257714301288, guid: 2da44351c42e20a4380db04b41c2640a, type: 3}
+      propertyPath: _TargetRotation.z
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7358939257714301288, guid: 2da44351c42e20a4380db04b41c2640a, type: 3}
       propertyPath: _characterDirection
@@ -350,6 +358,10 @@ PrefabInstance:
       value: WayPoint (8)
       objectReference: {fileID: 0}
     - target: {fileID: 7358939257714301288, guid: 2da44351c42e20a4380db04b41c2640a, type: 3}
+      propertyPath: _TargetRotation.z
+      value: 270
+      objectReference: {fileID: 0}
+    - target: {fileID: 7358939257714301288, guid: 2da44351c42e20a4380db04b41c2640a, type: 3}
       propertyPath: _characterDirection
       value: 3
       objectReference: {fileID: 0}
@@ -411,6 +423,10 @@ PrefabInstance:
       value: WayPoint (4)
       objectReference: {fileID: 0}
     - target: {fileID: 7358939257714301288, guid: 2da44351c42e20a4380db04b41c2640a, type: 3}
+      propertyPath: _TargetRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7358939257714301288, guid: 2da44351c42e20a4380db04b41c2640a, type: 3}
       propertyPath: _characterDirection
       value: 2
       objectReference: {fileID: 0}
@@ -428,7 +444,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1076096330}
-  - component: {fileID: 1076096331}
   - component: {fileID: 1076096329}
   m_Layer: 0
   m_Name: Enemy
@@ -481,26 +496,6 @@ Transform:
   - {fileID: 1116263950}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1076096331
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1076096328}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 062d9403f3aaf834d97e4e0654652f3d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _VisionConeMaterial: {fileID: 0}
-  _Parent: {fileID: 0}
-  _VisionRange: 0
-  _VisionAngle: 0
-  _VisionObstructingLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  _VisionConeResolution: 120
 --- !u!4 &1082123703 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2985594664594212480, guid: 2da44351c42e20a4380db04b41c2640a, type: 3}
@@ -734,6 +729,10 @@ PrefabInstance:
       value: WayPoint (6)
       objectReference: {fileID: 0}
     - target: {fileID: 7358939257714301288, guid: 2da44351c42e20a4380db04b41c2640a, type: 3}
+      propertyPath: _TargetRotation.z
+      value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: 7358939257714301288, guid: 2da44351c42e20a4380db04b41c2640a, type: 3}
       propertyPath: _characterDirection
       value: 2
       objectReference: {fileID: 0}
@@ -768,7 +767,7 @@ Transform:
   m_GameObject: {fileID: 1747476249}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.74, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -794,6 +793,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   _VisionConeResolution: 120
+  lerpSppeed: 2
 --- !u!1 &1773064591
 GameObject:
   m_ObjectHideFlags: 0
@@ -1146,6 +1146,14 @@ PrefabInstance:
     - target: {fileID: 3370751311996885007, guid: 2da44351c42e20a4380db04b41c2640a, type: 3}
       propertyPath: m_Name
       value: WayPoint (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7358939257714301288, guid: 2da44351c42e20a4380db04b41c2640a, type: 3}
+      propertyPath: _TargetRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7358939257714301288, guid: 2da44351c42e20a4380db04b41c2640a, type: 3}
+      propertyPath: _TargetRotation.z
+      value: -90
       objectReference: {fileID: 0}
     - target: {fileID: 7358939257714301288, guid: 2da44351c42e20a4380db04b41c2640a, type: 3}
       propertyPath: _characterDirection
