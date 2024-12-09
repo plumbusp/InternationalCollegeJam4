@@ -1,10 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class EnemyMovement : MonoBehaviour
 {
+    [Header("Components")]
+    [SerializeField] private FieldOfView _EnemyFieldOfView;
+
+    [Space (30f)]
+    [Header ("Rotation Placeholders")]
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private Sprite _UpRotationSprite;
     [SerializeField] private Sprite _DownRotationSprite;
@@ -19,6 +25,9 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] private float minReachDistance = 0.05f; 
 
     private WayPoint nextPoint; //The point that transform is currently moving towards
+
+    private float _timePassed;
+    [SerializeField] private float _LerpSpeed;
 
     private void Start()
     {
@@ -54,10 +63,17 @@ public class EnemyMovement : MonoBehaviour
             transform.position = Vector2.MoveTowards(transform.position,
                nextPoint.transform.position,
                moveSpeed * Time.deltaTime);
+
+            //Rotating object to look in the directin of next Pos 
+            var direction = transform.position - nextPoint.transform.position;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Lerp(Quaternion.AngleAxis(angle, transform.forward), transform.rotation, _timePassed);
+            _timePassed += Time.deltaTime;
         }
         else
         {
             transform.position = nextPoint.transform.position;
+            _timePassed = 0;
             nextPoint = GetNextWayPoint();
             Rotate(nextPoint);
         }
