@@ -6,8 +6,9 @@ using UnityEngine.UIElements;
 
 public class EnemyMovement : MonoBehaviour
 {
-    [Header("Components")]
-    [SerializeField] private OldFieldOfView _EnemyFieldOfView;
+    [Header("Enemy Field Of View")]
+    [SerializeField] private FieldOfView _EnemyFieldOfView;
+    [SerializeField] private Transform _origin;
 
     [Space (30f)]
     [Header ("Rotation Placeholders")]
@@ -41,6 +42,7 @@ public class EnemyMovement : MonoBehaviour
     private void Update()
     {
         Move();
+        _EnemyFieldOfView.SetOrigin(_origin.position);
     }
 
     private WayPoint GetNextWayPoint()
