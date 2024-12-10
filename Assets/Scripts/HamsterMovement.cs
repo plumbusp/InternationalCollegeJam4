@@ -12,10 +12,13 @@ public class HamsterMovement : MonoBehaviour
 	Vector2 movement;
 	Vector2 mousePos;
 
+	Animator animator;
+
 	void Start()
 	{
 		rb = GetComponent<Rigidbody2D>();
-	}
+		animator = GetComponent<Animator>();
+    }
 
 	void Update()
 	{
@@ -23,10 +26,13 @@ public class HamsterMovement : MonoBehaviour
 		movement.x = Input.GetAxisRaw("Horizontal");
 		movement.y = Input.GetAxisRaw("Vertical");
 
-		/*animator.SetFloat("Horizontal",movement.x);
+		animator.SetFloat("x", movement.x);
+        animator.SetFloat("y", movement.y);
+
+        /*animator.SetFloat("Horizontal",movement.x);
 		animator.SetFloat("Vertical",movement.y);
 		animator.SetFloat("Speed",movement.sqrMagnitude);*/
-	}
+    }
 
 	// Melhor para trabalhar com física	
 	void FixedUpdate()
