@@ -11,6 +11,8 @@ public class EnemyHearingAI : MonoBehaviour
     [SerializeField] private float _enemyChaseSpeed;
     [SerializeField] private float _enemyNormalSpeed;
     [SerializeField] private float _closeHearingRadius;
+    [SerializeField] private float _timeOnInvestigation;
+    private WaitForSeconds wait;
 
     //NavMesh
     [SerializeField] private NavMeshAgent agent;
@@ -24,13 +26,16 @@ public class EnemyHearingAI : MonoBehaviour
     //private Vector3 nextPoint;
 
     //Sounds
-    [Header("Sounds")]
-    [SerializeField] private List<ISocialPlatform> _soundsMakers;
+    [Header("Sound making items (must contain ISoundMaker interface)")]
+    [SerializeField] private List<GameObject> _soundsMakers;
+    private bool _Investigating = false;
+    private bool _waitingOnPlace = false;
 
     private void Start()
     {
         agent.updateRotation = false;
         agent.updateUpAxis = false;
+        wait = new WaitForSeconds(_timeOnInvestigation);
         agent.speed = _enemyNormalSpeed;
 
         foreach (var t in _wayPointsList)
@@ -40,10 +45,11 @@ public class EnemyHearingAI : MonoBehaviour
                 Debug.LogWarning("Way Point cannot be null !!!! >:(");
         }
 
-        foreach (ISoundMaker maker in _soundsMakers)
+        foreach (var maker in _soundsMakers)
         {
-            maker.OnLoudSoundMade += HandleLoudSound;
-            maker.OnQuiteSoundMade += HandleQuiteSound;
+            var soundM = maker.GetComponent<ISoundMaker>();
+            soundM.OnLoudSoundMade += HandleLoudSound;
+            soundM.OnQuiteSoundMade += HandleQuiteSound;
         }
         agent.SetDestination(GetNextPathPoint().position);
     }
@@ -52,9 +58,34 @@ public class EnemyHearingAI : MonoBehaviour
     {
         SmoothRotate2D();
 
+        if (_waitingOnPlace || _Investigating)
+        {
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, _closeHearingRadius);
+            if(colliders.Length > 0 )
+            {
+                foreach (var collider in colliders)
+                {
+                    if(collider.tag == "Player")
+                    {
+                        Debug.Log("Player LOST!!!");
+                    }
+                }
+            }
+        }
+
+        if(_waitingOnPlace)
+            return;
+
         if(agent.remainingDistance <= PatrolStopDistance)
         {
+            if (_Investigating && !_waitingOnPlace)
+            {
+                _waitingOnPlace= true;
+                StartCoroutine(WaitOnInvestigation());
+                return;
+            }
             agent.SetDestination(GetNextPathPoint().position);
+            agent.speed = _enemyNormalSpeed;
         }
     }
 
@@ -62,6 +93,8 @@ public class EnemyHearingAI : MonoBehaviour
     {
         agent.speed = _enemyChaseSpeed;
         agent.SetDestination(fromWhere);
+        _Investigating = true;
+        Debug.Log("Going to investigate loud sound");
     }
     private void HandleQuiteSound(Vector3 fromWhere)
     {
@@ -69,6 +102,9 @@ public class EnemyHearingAI : MonoBehaviour
         Quaternion.LookRotation(direction, Vector3.up);
         agent.speed = _enemyChaseSpeed;
         agent.SetDestination(fromWhere);
+        _Investigating = true;
+
+        Debug.Log("I hear something...");
     }
 
     private void SmoothRotate2D()
@@ -89,5 +125,21 @@ public class EnemyHearingAI : MonoBehaviour
         var nextPoint = _wayPoints.Dequeue();
         _wayPoints.Enqueue(nextPoint);
         return nextPoint;
+    }
+
+    private IEnumerator WaitOnInvestigation()
+    {
+        _waitingOnPlace = true;
+        agent.isStopped = true;
+        yield return wait;
+        agent.isStopped = false;
+        _Investigating = false;
+        _waitingOnPlace = false;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawSphere(transform.position, _closeHearingRadius);
+        Gizmos.color = Color.yellow;
     }
 }
