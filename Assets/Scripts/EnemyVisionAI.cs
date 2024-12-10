@@ -40,12 +40,12 @@ public class EnemyVisionAI : MonoBehaviour
     private void Update()
     {
         fieldOfView.SetOrigin(transform.position);
-        fieldOfView.SetDirection(transform.forward);
+        fieldOfView.SetDirection(transform.right);
 
         Destination();
-
-        if (agent.remainingDistance <= .1f)
-            transform.rotation = Quaternion.Slerp(transform.rotation, startRotation, Time.deltaTime * smooothRotationTime);
+        SmoothRotate2D();
+        //if (agent.remainingDistance <= .1f)
+        //    transform.rotation = Quaternion.Slerp(transform.rotation, startRotation, Time.deltaTime * smooothRotationTime);
     }
 
     private void Destination()
@@ -76,6 +76,25 @@ public class EnemyVisionAI : MonoBehaviour
         }
 
         agent.SetDestination(destination);
+    }
+
+    private void SmoothRotate2D()
+    {
+        if (agent.velocity.magnitude > 0.1f) // Only rotate if the agent is moving
+        {
+            Vector2 direction = agent.velocity.normalized; // Calculate the movement direction
+
+            float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;             // Calculate the target angle based on direction
+
+            float currentAngle = Mathf.LerpAngle(transform.eulerAngles.z, targetAngle, Time.deltaTime * smooothRotationTime);             // Smoothly rotate towards the target angle
+            transform.rotation = Quaternion.Euler(0, 0, currentAngle);
+
+            //SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();             // Optional: Flip the sprite based on direction
+            //if (spriteRenderer != null)
+            //{
+            //    spriteRenderer.flipX = direction.x < 0; // Flip horizontally if moving left
+            //}
+        }
     }
 
     private Transform GetNextPathPoint()
