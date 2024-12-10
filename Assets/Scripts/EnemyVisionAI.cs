@@ -47,11 +47,13 @@ public class EnemyVisionAI : MonoBehaviour
         if (_playerIsDead)
             return;
 
-        if (fieldOfView.IsTarget)
+        if (fieldOfView.IsTarget && !_isChasingPlayer)
+        {
             _isChasingPlayer = true;
+        }
 
         Destination();
-        SmoothRotate2D(); 
+        RapidRotate2d();
     }
 
     private void Destination()
@@ -129,6 +131,17 @@ public class EnemyVisionAI : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, 0, currentAngle);
         }
     }
+    private void RapidRotate2d()
+    {
+        Vector3 targetPos = target.position;
+        Vector3 thisPos = transform.position;
+        targetPos.x = targetPos.x - thisPos.x;
+        targetPos.y = targetPos.y - thisPos.y;
+        float angle = Mathf.Atan2(targetPos.y, targetPos.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle + 0.5f));
+    }
+
+
 
     private Transform GetNextPathPoint()
     {
