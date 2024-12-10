@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
 using CodeMonkey.Utils;
+using System;
 
 public class FieldOfView : MonoBehaviour {
+
+    public Action OnPlayerDetected;
 
     Mesh mesh;
 
@@ -52,6 +55,7 @@ public class FieldOfView : MonoBehaviour {
 
             if (raycastHit2D.collider != null && raycastHit2D.collider.tag == targetTag)
             {
+                OnPlayerDetected?.Invoke();
                 IsTarget = true;
             }
 

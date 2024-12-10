@@ -5,38 +5,41 @@ using UnityEngine.AI;
 
 public class EnemyVisionAI : MonoBehaviour
 {
-    [SerializeField] private float normalRotationRate = 25f;
-    [SerializeField] private float chaseRotationRate = 50f;
+    Quaternion startRotation;
 
-    [SerializeField] private float _enemyChaseSpeed;
-    [SerializeField] private float _enemyNormalSpeed;
-    [SerializeField] private FieldOfView fieldOfView;
-    [SerializeField] private NavMeshAgent agent;
-    [SerializeField] private Transform target;
-    [SerializeField] private float PlayerDeadDistance;
-    [SerializeField] private float PatrolStopDistance = 1f;
+    float smooothRotationTime = 3f;
+
+    [SerializeField] float _enemyChaseSpeed;
+    [SerializeField] float _enemyNormalSpeed;
+    [SerializeField] FieldOfView fieldOfView;
+    [SerializeField] NavMeshAgent agent;
+    [SerializeField] Transform target;
+    [SerializeField] float PlayerStopDistance = 1f;
+    [SerializeField] float PatrolStopDistance = 1f;
 
 
     //Path 
     [SerializeField] private List<Transform> _wayPointsList;
     private Queue<Transform> _wayPoints = new Queue<Transform>();
     private Transform nextPoint;
-    private bool _playerIsDead = false;
-    private bool _isChasingPlayer;
-    private Vector3 _lastPLayerPosition;
+    //Chasing
+    private bool _isFollowingTarget;
 
     private void Start()
     {
+        startRotation = transform.rotation;
         agent.updateRotation = false;
         agent.updateUpAxis = false;
         agent.speed = _enemyNormalSpeed;
 
+        fieldOfView.OnPlayerDetected += StartTargetFollowing;
+
         foreach (var t in _wayPointsList)
         {
             _wayPoints.Enqueue(t);
+            if (t == null)
+                Debug.LogWarning("Way Point cannot be null !!!! >:(");
         }
-
-        nextPoint = GetNextPathPoint();
     }
 
     private void Update()
@@ -44,34 +47,30 @@ public class EnemyVisionAI : MonoBehaviour
         fieldOfView.SetOrigin(transform.position);
         fieldOfView.SetDirection(transform.right);
 
-        if (_playerIsDead)
-            return;
-
-        if (fieldOfView.IsTarget && !_isChasingPlayer)
-        {
-            _isChasingPlayer = true;
-        }
-
         Destination();
-        RapidRotate2d();
+        SmoothRotate2D();
+        //if (agent.remainingDistance <= .1f)
+        //    transform.rotation = Quaternion.Slerp(transform.rotation, startRotation, Time.deltaTime * smooothRotationTime);
     }
 
     private void Destination()
     {
-        if (_isChasingPlayer)
+        if (_isFollowingTarget)
         {
-            ChasePlayer();
+            if(agent.remainingDistance <= PatrolStopDistance)
+            {
+                _isFollowingTarget = false;
+            }
             return;
         }
 
         var destination = Vector3.zero;
-        if(nextPoint == null || Vector2.Distance(transform.position, nextPoint.position) <= PatrolStopDistance)
+
+        if (nextPoint == null || Vector2.Distance(transform.position, nextPoint.position) <= PatrolStopDistance)
         {
             nextPoint = GetNextPathPoint();
-            if (nextPoint == null)
-                Debug.LogWarning("Way Point cannot be null !!!! >:(");
-            destination = nextPoint.position;
             agent.speed = _enemyNormalSpeed;
+            destination = nextPoint.position;
         }
         else
         {
@@ -81,38 +80,12 @@ public class EnemyVisionAI : MonoBehaviour
         agent.SetDestination(destination);
     }
 
-    private void ChasePlayer()
+    private void StartTargetFollowing()
     {
-        // Player is in field of view && Close enought to be killed
-        if (fieldOfView.IsTarget && Vector2.Distance(transform.position, target.position) <= PlayerDeadDistance)
-        {
-            _playerIsDead = true;
-            agent.isStopped = true;
-        }
-        //Player is in field of view
-        else if (fieldOfView.IsTarget)
-        {
-            nextPoint = null;
-            agent.SetDestination(target.position);
-            agent.speed = _enemyChaseSpeed;
-            _lastPLayerPosition = target.position;
-        }
-        //Player in not in field of view but the place where he was is known
-        else if (!fieldOfView.IsTarget && _isChasingPlayer)
-        {
-            Debug.Log(Vector2.Distance(transform.position, _lastPLayerPosition));
-
-            if (Vector2.Distance(transform.position, _lastPLayerPosition) <= PatrolStopDistance)
-            {
-                _isChasingPlayer = false;
-                Debug.Log(Vector2.Distance(transform.position, _lastPLayerPosition));
-            }
-            agent.SetDestination(_lastPLayerPosition);
-        }
-        else
-        {
-            Debug.Log("WTH is this");
-        }
+        _isFollowingTarget = true;
+        nextPoint = null;
+        agent.speed = _enemyChaseSpeed;
+        agent.SetDestination(target.position);
     }
 
     private void SmoothRotate2D()
@@ -122,26 +95,17 @@ public class EnemyVisionAI : MonoBehaviour
             Vector2 direction = agent.velocity.normalized; // Calculate the movement direction
 
             float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;             // Calculate the target angle based on direction
-            float currentAngle;
-            if (fieldOfView.IsTarget)
-                currentAngle = Mathf.LerpAngle(transform.eulerAngles.z, targetAngle, Time.deltaTime * chaseRotationRate);
-            else
-                currentAngle = Mathf.LerpAngle(transform.eulerAngles.z, targetAngle, Time.deltaTime * normalRotationRate);
 
+            float currentAngle = Mathf.LerpAngle(transform.eulerAngles.z, targetAngle, Time.deltaTime * smooothRotationTime);             // Smoothly rotate towards the target angle
             transform.rotation = Quaternion.Euler(0, 0, currentAngle);
+
+            //SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();             // Optional: Flip the sprite based on direction
+            //if (spriteRenderer != null)
+            //{
+            //    spriteRenderer.flipX = direction.x < 0; // Flip horizontally if moving left
+            //}
         }
     }
-    private void RapidRotate2d()
-    {
-        Vector3 targetPos = target.position;
-        Vector3 thisPos = transform.position;
-        targetPos.x = targetPos.x - thisPos.x;
-        targetPos.y = targetPos.y - thisPos.y;
-        float angle = Mathf.Atan2(targetPos.y, targetPos.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle + 0.5f));
-    }
-
-
 
     private Transform GetNextPathPoint()
     {
@@ -150,5 +114,25 @@ public class EnemyVisionAI : MonoBehaviour
         _wayPoints.Enqueue(nextPoint);
         return nextPoint;
     }
-
 }
+
+//if (fieldOfView.IsTarget)
+//{
+//    nextPoint = null;
+//    _lastSeen = target.position;
+//    destination = target.position;
+//    agent.stoppingDistance = PlayerStopDistance;
+//    agent.speed = _enemyChaseSpeed;
+//}
+//else if(!fieldOfView.IsTarget && !_checkedLastSeen)
+//{
+//    destination = _lastSeen;
+//}
+//else if(!fieldOfView.IsTarget && !_checkedLastSeen && Vector2.Distance(transform.position, _lastSeen) <= PatrolStopDistance)
+//{
+//    _checkedLastSeen = true;
+//}
+//else
+//{
+//    Debug.Log();
+//}

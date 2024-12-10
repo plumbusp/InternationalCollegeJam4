@@ -387,7 +387,7 @@ Transform:
   m_GameObject: {fileID: 724372149}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.37, y: 0.79, z: 0}
+  m_LocalPosition: {x: 0.62, y: 8.84, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -484,7 +484,7 @@ Transform:
   m_GameObject: {fileID: 849092859}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.44, y: -4.66, z: 0}
+  m_LocalPosition: {x: -0.17, y: 3.83, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -617,14 +617,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5888ea423f10414d94ddd462c195aa4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalRotationRate: 25
-  chaseRotationRate: 50
-  _enemyChaseSpeed: 0
-  _enemyNormalSpeed: 0
+  _enemyChaseSpeed: 25
+  _enemyNormalSpeed: 5
   fieldOfView: {fileID: 1747476254}
   agent: {fileID: 1076096332}
   target: {fileID: 724372151}
-  PlayerDeadDistance: 0
+  PlayerStopDistance: 1
   PatrolStopDistance: 0.1
   _wayPointsList:
   - {fileID: 1543048928}
