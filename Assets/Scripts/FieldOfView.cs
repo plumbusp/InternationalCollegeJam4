@@ -3,79 +3,88 @@ using CodeMonkey.Utils;
 
 public class FieldOfView : MonoBehaviour {
 
-    [SerializeField] private LayerMask layerMask;
-    [SerializeField] private float viewDistance = 50f;
-    [SerializeField] private float fieldOV = 90f;
-    [SerializeField] private int rayCount = 50;
+    Mesh mesh;
 
-    private Mesh mesh;
-    private Vector3 origin;
-    private float startingAngle;
+    Vector3 origin = Vector3.zero;
 
+    float startAngle;
 
-    private void Start() {
+    [SerializeField] MeshFilter meshFilter;
+    [SerializeField] int rayCount = 2;
+    [SerializeField] float fieldOfView = 90f;
+    [SerializeField] float distance = 50f;
+    [SerializeField] Vector3 offset;
+    [SerializeField] LayerMask targetMask;
+    [SerializeField] LayerMask layerMask;
+
+    public bool IsTarget { get; private set; }
+
+    private void Start()
+    {
         mesh = new Mesh();
-        GetComponent<MeshFilter>().mesh = mesh;
-        origin = Vector3.zero;
+        meshFilter.mesh = mesh;
     }
 
-    private void LateUpdate() {
-        float angle = startingAngle;
-        float angleIncrease = fieldOV / rayCount;
+    private void LateUpdate()
+    {
+        IsTarget = false;
 
-        Vector3[] vertices = new Vector3[rayCount + 1 + 1];
-        Vector2[] uv = new Vector2[vertices.Length];
-        int[] triangles = new int[rayCount * 3];
+        transform.position = Vector3.zero;
+        transform.rotation = Quaternion.identity;
+
+        var angle = startAngle;
+        var angleIncrease = fieldOfView / rayCount;
+
+        var vertices = new Vector3[rayCount + 1 + 1];
+        var uv = new Vector2[vertices.Length];
+        var triangles = new int[rayCount * 3];
+
+        var vertexIndex = 1;
+        var trianglesIndex = 0;
 
         vertices[0] = origin;
 
-        int vertexIndex = 1;
-        int triangleIndex = 0;
-        for (int i = 0; i <= rayCount; i++) {
-            Vector3 vertex;
-            RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, UtilsClass.GetVectorFromAngle(angle), viewDistance, layerMask);
-            if (raycastHit2D.collider == null) {
-                // No hit
-                vertex = origin + UtilsClass.GetVectorFromAngle(angle) * viewDistance;
-            } else {
-                // Hit object
-                vertex = raycastHit2D.point;
-            }
+        for (int i = 0; i <= rayCount; i++)
+        {
+            RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, UtilsClass.GetVectorFromAngle(angle), distance, layerMask);
+            Vector2 vertex = raycastHit2D.collider ? raycastHit2D.point : origin + MathHelper.AngleToVector2D(angle + transform.eulerAngles.y) * distance;
+
+            if (raycastHit2D.collider != null && CompareLayer(raycastHit2D.collider.gameObject.layer, targetMask))
+                IsTarget = true;
+
             vertices[vertexIndex] = vertex;
 
-            if (i > 0) {
-                triangles[triangleIndex + 0] = 0;
-                triangles[triangleIndex + 1] = vertexIndex - 1;
-                triangles[triangleIndex + 2] = vertexIndex;
+            if (i > 0)
+            {
+                triangles[trianglesIndex + 0] = 0;
+                triangles[trianglesIndex + 1] = vertexIndex - 1;
+                triangles[trianglesIndex + 2] = vertexIndex;
 
-                triangleIndex += 3;
+                trianglesIndex += 3;
             }
 
             vertexIndex++;
+
             angle -= angleIncrease;
         }
-
 
         mesh.vertices = vertices;
         mesh.uv = uv;
         mesh.triangles = triangles;
-        mesh.bounds = new Bounds(origin, Vector3.one * 1000f);
     }
 
-    public void SetOrigin(Vector3 origin) {
-        this.origin = origin;
+    public void SetOrigin(Vector3 origin)
+    {
+        this.origin = origin + offset;
     }
 
-    public void SetAimDirection(Vector3 aimDirection) {
-        startingAngle = UtilsClass.GetAngleFromVectorFloat(aimDirection) + fieldOV / 2f;
+    public void SetDirection(Vector3 direction)
+    {
+        startAngle = MathHelper.VectorToAngle2D(direction) + fieldOfView / 2f;
     }
 
-    public void SetFoV(float fov) {
-        this.fieldOV = fov;
+    bool CompareLayer(LayerMask layer, LayerMask layerMask)
+    {
+        return layerMask == (layerMask | (1 << layer));
     }
-
-    public void SetViewDistance(float viewDistance) {
-        this.viewDistance = viewDistance;
-    }
-
 }
