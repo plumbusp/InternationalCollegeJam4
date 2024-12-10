@@ -5,7 +5,6 @@ using UnityEngine.AI;
 
 public class EnemyVisionAI : MonoBehaviour
 {
-    Vector3 startPos;
     Quaternion startRotation;
 
     float smooothRotationTime = 3f;
@@ -13,14 +12,26 @@ public class EnemyVisionAI : MonoBehaviour
     [SerializeField] FieldOfView fieldOfView;
     [SerializeField] NavMeshAgent agent;
     [SerializeField] Transform target;
-    [SerializeField] float stoppingDistance = 1f;
+    [SerializeField] float PlayerStopDistance = 1f;
+    [SerializeField] float PatrolStopDistance = 1f;
+
+
+    //Path 
+    [SerializeField] private List<Transform> _wayPointsList;
+    private Queue<Transform> _wayPoints = new Queue<Transform>();
+    private Transform nextPoint;
+    private bool reachedPreviousPoint = true;
 
     private void Start()
     {
-        startPos = transform.position;
         startRotation = transform.rotation;
         agent.updateRotation = false;
         agent.updateUpAxis = false;
+
+        foreach(var t in _wayPointsList)
+        {
+            _wayPoints.Enqueue(t);
+        }
     }
 
     private void Update()
@@ -30,8 +41,8 @@ public class EnemyVisionAI : MonoBehaviour
 
         Destination();
 
-        if (agent.remainingDistance <= .1f)
-            transform.rotation = Quaternion.Slerp(transform.rotation, startRotation, Time.deltaTime * smooothRotationTime);
+        //if (agent.remainingDistance <= .1f)
+        //    transform.rotation = Quaternion.Slerp(transform.rotation, startRotation, Time.deltaTime * smooothRotationTime);
     }
 
     private void Destination()
@@ -40,15 +51,54 @@ public class EnemyVisionAI : MonoBehaviour
 
         if (fieldOfView.IsTarget)
         {
+            reachedPreviousPoint = true;
             destination = target.position;
-            agent.stoppingDistance = stoppingDistance;
+            agent.stoppingDistance = PlayerStopDistance;
         }
+        
         else
         {
-            destination = startPos;
-            agent.stoppingDistance = 0;
+            if (reachedPreviousPoint)
+            {
+                nextPoint = GetNextPathPoint();
+                Debug.Log("Next Position : " + nextPoint);
+                if (nextPoint == null)
+                {
+                    Debug.LogWarning("Way Point cannot be null !!!! >:(");
+                }
+                agent.destination = nextPoint.position;
+            }
+            else if(Vector2.Distance(transform.position, nextPoint.position) <= PatrolStopDistance) 
+            {
+                reachedPreviousPoint = true;
+                Debug.Log(Vector2.Distance(transform.position, nextPoint.position));
+            }
         }
 
-        agent.SetDestination(destination);
+           
+        //if (!reachedPreviousPoint)
+        //{
+        //    reachedPreviousPoint = false;
+        //    nextPoint = GetNextPathPoint();
+        //    destination = nextPoint.position;
+        //    Debug.Log("Next Position : " + nextPoint);
+        //}
+
+        //Debug.Log("Distance: " + Vector2.Distance(transform.position, nextPoint.position));
+        //if (Vector2.Distance(transform.position, nextPoint.position) <= PatrolStopDistance)
+        //{
+        //    reachedPreviousPoint = true;
+        //    Debug.Log("REACHEEED");
+        //}
+
+        //agent.SetDestination(destination);
+    }
+
+    private Transform GetNextPathPoint()
+    {
+        Debug.Log("GetNext POINTTT");
+        var nextPoint = _wayPoints.Dequeue();
+        _wayPoints.Enqueue(nextPoint);
+        return nextPoint;
     }
 }

@@ -16,6 +16,7 @@ public class FieldOfView : MonoBehaviour {
     [SerializeField] Vector3 offset;
     [SerializeField] string targetTag;
     [SerializeField] LayerMask layerMask;
+    [SerializeField] float noticeCoolDown;
 
     public bool IsTarget { get; private set; }
 
