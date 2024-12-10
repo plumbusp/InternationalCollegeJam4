@@ -1,158 +1,112 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
+[RequireComponent(typeof(MeshFilter))]
 public class FieldOfView : MonoBehaviour
 {
-    [SerializeField] private Material _VisionConeMaterial;
-    [SerializeField] private Transform _Parent; //Used for rotation
-    [SerializeField] private float _VisionRange;
-    [SerializeField] private float _VisionAngle;
-    [SerializeField] private LayerMask _VisionObstructingLayer; //layer with objects that obstruct the enemy view, like walls, for example
-    [SerializeField] private int _VisionConeResolution = 120; //the vision cone will be made up of triangles, the higher this value is the pretier the vision cone will be
-    
-    private Mesh _VisionConeMesh;
-    private MeshFilter _meshFilter;
+    [SerializeField] private LayerMask detectionLayer;
 
-    Transform _lookAt;
-    //private Vector3 _newRotation;
-    [SerializeField] private float lerpSppeed;
-    //private CharacterDirection _currentDirection;
+    private Mesh mesh;
 
-    //private Quaternion _leftRotation = Quaternion.Euler(0, 0, 90);
-    //private Quaternion _rightRotation = Quaternion.Euler(0, 0, 270);
-    //private Quaternion _upRotation =  Quaternion.Euler(0, 0, 0);
-    //private Quaternion _downRotation = Quaternion.Euler(0, 0, 180);
-
-
-    int[] triangles;
-    Vector3[] Vertices;
-    float Currentangle;
-    float angleIcrement;
-    float Sine;
-    float Cosine;
-
-    void Start()
+    private void Start()
     {
-        transform.AddComponent<MeshRenderer>().material = _VisionConeMaterial;
-        _meshFilter = transform.AddComponent<MeshFilter>();
-        _VisionConeMesh = new Mesh();
-        _VisionAngle *= Mathf.Deg2Rad;
+        mesh = new Mesh();
+        GetComponent<MeshFilter>().mesh = mesh;
     }
 
-    void Update()
+    private void Update()
     {
-        DrawVisionCone();//calling the vision cone function everyframe just so the cone is updated every frame
-        if(_lookAt == null)
-        {
-            Debug.LogError(_lookAt + " Cant Be null!!!");
-            return;
-        }
-        //    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(_lookAt.position), lerpSppeed * Time.deltaTime);
-        //        var zLerp = Mathf.Lerp(_Parent.transform.rotation.z, targetRotation.z, timeElapsed / lerpDuration);
-        //        _newRotation = new Vector3(_Parent.transform.rotation.x, _Parent.transform.rotation.y, zLerp);
-        //        _Parent.transform.rotation = Quaternion.Euler(_newRotation);
-        //        timeElapsed += Time.deltaTime;
-    }
+        [SerializeField] private int rayCount = 2;
+        [SerializeField] private float fieldOV = 90f; //angle degrees
+        [SerializeField] private float viewDistance = 50f;
 
-    void DrawVisionCone()//this method creates the vision cone mesh
-    {
-        triangles = new int[(_VisionConeResolution - 1) * 3];
-        Vertices = new Vector3[_VisionConeResolution + 1];
-        Vertices[0] = Vector3.zero;
-        Currentangle = -_VisionAngle / 2;
-        angleIcrement = _VisionAngle / (_VisionConeResolution - 1);
+        Vector3 origin = Vector2.zero;
+        float currentAngle = 0f;
+        float angleIncrease = fieldOV / rayCount;
 
-        for (int i = 0; i < _VisionConeResolution; i++)
+        Vector3[] vertices = new Vector3[rayCount + 1 + 1];
+        Vector2[] uv = new Vector2[vertices.Length];
+        int[] triangles = new int[rayCount * 3];
+
+        vertices[0] = origin;
+
+        int vertexIndex = 1;
+        int triangleIndex = 0;
+        for (int i = 0; i <= rayCount; i++)
         {
-            Sine = Mathf.Sin(Currentangle);
-            Cosine = Mathf.Cos(Currentangle);
-            Vector3 RaycastDirection = (transform.up * Cosine) + (transform.forward * Sine);
-            Vector3 VertForward = (Vector3.up * Cosine) + (Vector3.forward * Sine);
-            RaycastHit2D raycastHit = Physics2D.Raycast(transform.position, RaycastDirection, _VisionRange, _VisionObstructingLayer);
-            if (raycastHit)
+            Vector3 vertex;
+            RaycastHit2D hit = Physics2D.Raycast(origin, GetVectorFromAngle(currentAngle), viewDistance, detectionLayer);
+
+            if (hit.collider == null)
             {
-                Vertices[i + 1] = VertForward * raycastHit.distance;
+                vertex = origin + GetVectorFromAngle(currentAngle) * viewDistance;
             }
             else
             {
-                Vertices[i + 1] = VertForward * _VisionRange;
+                Debug.Log("HitPoint!!");
+                vertex = hit.point;
             }
 
+            vertices[vertexIndex] = vertex;
 
-            Currentangle += angleIcrement;
+            if (i > 0)
+            {
+                triangles[triangleIndex + 0] = 0;
+                triangles[triangleIndex + 1] = vertexIndex - 1;
+                triangles[triangleIndex + 2] = vertexIndex;
+
+                triangleIndex += 3;
+            }
+            vertexIndex++;
+            currentAngle -= angleIncrease;
         }
-        for (int i = 0, j = 0; i < triangles.Length; i += 3, j++)
-        {
-            triangles[i] = 0;
-            triangles[i + 1] = j + 1;
-            triangles[i + 2] = j + 2;
-        }
-        _VisionConeMesh.Clear();
-        _VisionConeMesh.vertices = Vertices;
-        _VisionConeMesh.triangles = triangles;
-        _meshFilter.mesh = _VisionConeMesh;
+
+        triangles[0] = 0;
+        triangles[1] = 1;
+        triangles[2] = 2;
+
+        mesh.vertices = vertices;
+        mesh.uv = uv;
+        mesh.triangles = triangles;
     }
-
-    public void ChangeViewDirection(WayPoint referencePoint)
+    private static Vector3 GetVectorFromAngle(float angle)
     {
-        _lookAt = referencePoint.transform;
+        float angleRad = angle * (Mathf.PI / (180f));
+        return new Vector3(Mathf.Cos(angleRad), Mathf.Sin(angleRad));
     }
-    
 
-    //public void ChangeViewDirection(WayPoint referencePoint)
-    //{
-    //    if (_currentDirection == referencePoint.CharacterDirection)
-    //        return;
+    private void OnDrawGizmos()
+    {
+        Vector3 origin = Vector2.zero;
+        float currentAngle = 0f;
+        float angleIncrease = fieldOV / rayCount;
 
-    //    StopLerpCoroutine();
-    //    Debug.Log("ChangeViewDirection");
+        Vector3[] vertices = new Vector3[rayCount + 1 + 1];
+        Vector2[] uv = new Vector2[vertices.Length];
+        int[] triangles = new int[rayCount * 3];
 
-    //    switch (referencePoint.CharacterDirection)
-    //    {
-    //        case CharacterDirection.Left:
-    //            StartCoroutine(RotationLerp(referencePoint.TargetRotation));
-    //            _currentDirection = CharacterDirection.Left;
-    //            break;
+        vertices[0] = origin;
 
-    //        case CharacterDirection.Right:
-    //            StartCoroutine(RotationLerp(referencePoint.TargetRotation));
-    //            _currentDirection = CharacterDirection.Right;
-    //            break;
+        int vertexIndex = 1;
+        int triangleIndex = 0;
+        for (int i = 0; i <= rayCount; i++)
+        {
+            Vector3 vertex;
+            RaycastHit2D hit = Physics2D.Raycast(origin, GetVectorFromAngle(currentAngle), viewDistance, detectionLayer);
 
-    //        case CharacterDirection.Up:
-    //            StartCoroutine(RotationLerp(referencePoint.TargetRotation));
-    //            _currentDirection = CharacterDirection.Up;
-    //            break;
+            if (hit.collider == null)
+            {
+                vertex = origin + GetVectorFromAngle(currentAngle) * viewDistance;
+                Gizmos.DrawLine(origin, vertex);
+                Gizmos.color = Color.blue;
+            }
+            else
+            {
+                Gizmos.DrawLine(origin, hit.point);
+            }
+        }
 
-    //        case CharacterDirection.Down:
-    //            StartCoroutine(RotationLerp(referencePoint.TargetRotation));
-    //            _currentDirection = CharacterDirection.Down;
-    //            break;
-    //    }
-    //}
-
-    //private void StopLerpCoroutine()
-    //{
-    //    StopAllCoroutines();
-    //}
-
-    //public IEnumerator RotationLerp(Vector3 targetRotation)
-    //{
-    //    float timeElapsed = 0;
-
-    //    while (timeElapsed < lerpDuration)
-    //    {
-    //        var zLerp = Mathf.Lerp(_Parent.transform.rotation.z, targetRotation.z, timeElapsed / lerpDuration);
-    //        _newRotation = new Vector3(_Parent.transform.rotation.x, _Parent.transform.rotation.y, zLerp);
-    //        _Parent.transform.rotation = Quaternion.Euler(_newRotation);
-    //        timeElapsed += Time.deltaTime;
-    //        Debug.Log("timeElapsed " + timeElapsed + "rotation " + _newRotation + " Quaternion " + _Parent.transform.rotation);
-    //        yield return null;
-    //    }
-
-    //    _Parent.transform.rotation = Quaternion.Euler(targetRotation);
-    //}
+    }
 }
+  

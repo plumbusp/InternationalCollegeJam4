@@ -36,7 +36,6 @@ public class EnemyMovement : MonoBehaviour
         }
         nextPoint = GetNextWayPoint();
         Rotate(nextPoint);
-        _EnemyFieldOfView.ChangeViewDirection(nextPoint);
     }
 
     private void Update()
@@ -70,7 +69,6 @@ public class EnemyMovement : MonoBehaviour
             transform.position = nextPoint.transform.position;
             nextPoint = GetNextWayPoint();
             Rotate(nextPoint);
-            _EnemyFieldOfView.ChangeViewDirection(nextPoint);
         }
     }
 
