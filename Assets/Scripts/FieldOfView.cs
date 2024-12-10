@@ -14,7 +14,7 @@ public class FieldOfView : MonoBehaviour {
     [SerializeField] float fieldOfView = 90f;
     [SerializeField] float distance = 50f;
     [SerializeField] Vector3 offset;
-    [SerializeField] LayerMask targetMask;
+    [SerializeField] string targetTag;
     [SerializeField] LayerMask layerMask;
 
     public bool IsTarget { get; private set; }
@@ -49,8 +49,12 @@ public class FieldOfView : MonoBehaviour {
             RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, UtilsClass.GetVectorFromAngle(angle), distance, layerMask);
             Vector2 vertex = raycastHit2D.collider ? raycastHit2D.point : origin + MathHelper.AngleToVector2D(angle + transform.eulerAngles.y) * distance;
 
-            if (raycastHit2D.collider != null && CompareLayer(raycastHit2D.collider.gameObject.layer, targetMask))
+            if (raycastHit2D.collider != null && raycastHit2D.collider.tag == targetTag)
+            {
                 IsTarget = true;
+                Debug.Log("DETECTED PLAYER !!! YAPPPY");
+            }
+
 
             vertices[vertexIndex] = vertex;
 
