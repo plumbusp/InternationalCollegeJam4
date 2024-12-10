@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 public class EnemyMovement : MonoBehaviour
 {
     [Header("Components")]
-    [SerializeField] private FieldOfView _EnemyFieldOfView;
+    [SerializeField] private OldFieldOfView _EnemyFieldOfView;
 
     [Space (30f)]
     [Header ("Rotation Placeholders")]

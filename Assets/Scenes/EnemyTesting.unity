@@ -464,7 +464,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e120918274883a145aa4373285d3bce9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _EnemyFieldOfView: {fileID: 1747476251}
+  _EnemyFieldOfView: {fileID: 0}
   _spriteRenderer: {fileID: 1155254887}
   _UpRotationSprite: {fileID: 21300000, guid: c35dad436991b8e4782cd617a62f3134, type: 3}
   _DownRotationSprite: {fileID: 21300000, guid: 4fd6ca778177b68458bb8ff0fbeb2b2b, type: 3}
@@ -717,9 +717,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1747476250}
-  - component: {fileID: 1747476251}
   - component: {fileID: 1747476253}
   - component: {fileID: 1747476252}
+  - component: {fileID: 1747476254}
   m_Layer: 0
   m_Name: FieldOfView
   m_TagString: Untagged
@@ -736,30 +736,12 @@ Transform:
   m_GameObject: {fileID: 1747476249}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6.28, y: -2.91, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1747476251
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1747476249}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 062d9403f3aaf834d97e4e0654652f3d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rayCount: 100
-  fieldOV: 90
-  viewDistance: 50
-  detectionLayer:
-    serializedVersion: 2
-    m_Bits: 64
 --- !u!33 &1747476252
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -810,6 +792,21 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1747476254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1747476249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f63d117ccc6fa3c44928ae91f95587b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &1773064591
 GameObject:
   m_ObjectHideFlags: 0
