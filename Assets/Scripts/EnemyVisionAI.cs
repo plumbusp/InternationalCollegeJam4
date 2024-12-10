@@ -5,28 +5,28 @@ using UnityEngine.AI;
 
 public class EnemyVisionAI : MonoBehaviour
 {
-    Quaternion startRotation;
+    [SerializeField] private float normalRotationRate = 25f;
+    [SerializeField] private float chaseRotationRate = 50f;
 
-    float smooothRotationTime = 3f;
-
-    [SerializeField] float _enemyChaseSpeed;
-    [SerializeField] float _enemyNormalSpeed;
-    [SerializeField] FieldOfView fieldOfView;
-    [SerializeField] NavMeshAgent agent;
-    [SerializeField] Transform target;
-    [SerializeField] float PlayerStopDistance = 1f;
-    [SerializeField] float PatrolStopDistance = 1f;
+    [SerializeField] private float _enemyChaseSpeed;
+    [SerializeField] private float _enemyNormalSpeed;
+    [SerializeField] private FieldOfView fieldOfView;
+    [SerializeField] private NavMeshAgent agent;
+    [SerializeField] private Transform target;
+    [SerializeField] private float PlayerDeadDistance;
+    [SerializeField] private float PatrolStopDistance = 1f;
 
 
     //Path 
     [SerializeField] private List<Transform> _wayPointsList;
     private Queue<Transform> _wayPoints = new Queue<Transform>();
     private Transform nextPoint;
-    private bool reachedPreviousPoint = true;
+    private bool _playerIsDead = false;
+    private bool _isChasingPlayer;
+    private Vector3 _lastPLayerPosition;
 
     private void Start()
     {
-        startRotation = transform.rotation;
         agent.updateRotation = false;
         agent.updateUpAxis = false;
         agent.speed = _enemyNormalSpeed;
@@ -35,6 +35,8 @@ public class EnemyVisionAI : MonoBehaviour
         {
             _wayPoints.Enqueue(t);
         }
+
+        nextPoint = GetNextPathPoint();
     }
 
     private void Update()
@@ -42,31 +44,30 @@ public class EnemyVisionAI : MonoBehaviour
         fieldOfView.SetOrigin(transform.position);
         fieldOfView.SetDirection(transform.right);
 
+        if (_playerIsDead)
+            return;
+
+        if (fieldOfView.IsTarget)
+            _isChasingPlayer = true;
+
         Destination();
-        SmoothRotate2D();
-        //if (agent.remainingDistance <= .1f)
-        //    transform.rotation = Quaternion.Slerp(transform.rotation, startRotation, Time.deltaTime * smooothRotationTime);
+        SmoothRotate2D(); 
     }
 
     private void Destination()
     {
-        var destination = Vector3.zero;
-
-        if (fieldOfView.IsTarget)
+        if (_isChasingPlayer)
         {
-            nextPoint = null;
-            destination = target.position;
-            agent.stoppingDistance = PlayerStopDistance;
-            agent.speed = _enemyChaseSpeed;
+            ChasePlayer();
+            return;
         }
-        else if(nextPoint == null || Vector2.Distance(transform.position, nextPoint.position) <= PatrolStopDistance)
+
+        var destination = Vector3.zero;
+        if(nextPoint == null || Vector2.Distance(transform.position, nextPoint.position) <= PatrolStopDistance)
         {
             nextPoint = GetNextPathPoint();
-            //Debug.Log("Next Position : " + nextPoint);
             if (nextPoint == null)
-            {
                 Debug.LogWarning("Way Point cannot be null !!!! >:(");
-            }
             destination = nextPoint.position;
             agent.speed = _enemyNormalSpeed;
         }
@@ -78,6 +79,40 @@ public class EnemyVisionAI : MonoBehaviour
         agent.SetDestination(destination);
     }
 
+    private void ChasePlayer()
+    {
+        // Player is in field of view && Close enought to be killed
+        if (fieldOfView.IsTarget && Vector2.Distance(transform.position, target.position) <= PlayerDeadDistance)
+        {
+            _playerIsDead = true;
+            agent.isStopped = true;
+        }
+        //Player is in field of view
+        else if (fieldOfView.IsTarget)
+        {
+            nextPoint = null;
+            agent.SetDestination(target.position);
+            agent.speed = _enemyChaseSpeed;
+            _lastPLayerPosition = target.position;
+        }
+        //Player in not in field of view but the place where he was is known
+        else if (!fieldOfView.IsTarget && _isChasingPlayer)
+        {
+            Debug.Log(Vector2.Distance(transform.position, _lastPLayerPosition));
+
+            if (Vector2.Distance(transform.position, _lastPLayerPosition) <= PatrolStopDistance)
+            {
+                _isChasingPlayer = false;
+                Debug.Log(Vector2.Distance(transform.position, _lastPLayerPosition));
+            }
+            agent.SetDestination(_lastPLayerPosition);
+        }
+        else
+        {
+            Debug.Log("WTH is this");
+        }
+    }
+
     private void SmoothRotate2D()
     {
         if (agent.velocity.magnitude > 0.1f) // Only rotate if the agent is moving
@@ -85,15 +120,13 @@ public class EnemyVisionAI : MonoBehaviour
             Vector2 direction = agent.velocity.normalized; // Calculate the movement direction
 
             float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;             // Calculate the target angle based on direction
+            float currentAngle;
+            if (fieldOfView.IsTarget)
+                currentAngle = Mathf.LerpAngle(transform.eulerAngles.z, targetAngle, Time.deltaTime * chaseRotationRate);
+            else
+                currentAngle = Mathf.LerpAngle(transform.eulerAngles.z, targetAngle, Time.deltaTime * normalRotationRate);
 
-            float currentAngle = Mathf.LerpAngle(transform.eulerAngles.z, targetAngle, Time.deltaTime * smooothRotationTime);             // Smoothly rotate towards the target angle
             transform.rotation = Quaternion.Euler(0, 0, currentAngle);
-
-            //SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();             // Optional: Flip the sprite based on direction
-            //if (spriteRenderer != null)
-            //{
-            //    spriteRenderer.flipX = direction.x < 0; // Flip horizontally if moving left
-            //}
         }
     }
 
@@ -104,4 +137,5 @@ public class EnemyVisionAI : MonoBehaviour
         _wayPoints.Enqueue(nextPoint);
         return nextPoint;
     }
+
 }

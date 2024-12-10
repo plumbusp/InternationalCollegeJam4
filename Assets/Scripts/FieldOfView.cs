@@ -53,7 +53,6 @@ public class FieldOfView : MonoBehaviour {
             if (raycastHit2D.collider != null && raycastHit2D.collider.tag == targetTag)
             {
                 IsTarget = true;
-                Debug.Log("DETECTED PLAYER !!! YAPPPY");
             }
 
 
