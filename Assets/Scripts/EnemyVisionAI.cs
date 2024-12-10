@@ -9,6 +9,8 @@ public class EnemyVisionAI : MonoBehaviour
 
     float smooothRotationTime = 3f;
 
+    [SerializeField] float _enemyChaseSpeed;
+    [SerializeField] float _enemyNormalSpeed;
     [SerializeField] FieldOfView fieldOfView;
     [SerializeField] NavMeshAgent agent;
     [SerializeField] Transform target;
@@ -27,8 +29,9 @@ public class EnemyVisionAI : MonoBehaviour
         startRotation = transform.rotation;
         agent.updateRotation = false;
         agent.updateUpAxis = false;
+        agent.speed = _enemyNormalSpeed;
 
-        foreach(var t in _wayPointsList)
+        foreach (var t in _wayPointsList)
         {
             _wayPoints.Enqueue(t);
         }
@@ -41,8 +44,8 @@ public class EnemyVisionAI : MonoBehaviour
 
         Destination();
 
-        //if (agent.remainingDistance <= .1f)
-        //    transform.rotation = Quaternion.Slerp(transform.rotation, startRotation, Time.deltaTime * smooothRotationTime);
+        if (agent.remainingDistance <= .1f)
+            transform.rotation = Quaternion.Slerp(transform.rotation, startRotation, Time.deltaTime * smooothRotationTime);
     }
 
     private void Destination()
@@ -51,47 +54,28 @@ public class EnemyVisionAI : MonoBehaviour
 
         if (fieldOfView.IsTarget)
         {
-            reachedPreviousPoint = true;
+            nextPoint = null;
             destination = target.position;
             agent.stoppingDistance = PlayerStopDistance;
+            agent.speed = _enemyChaseSpeed;
         }
-        
+        else if(nextPoint == null || Vector2.Distance(transform.position, nextPoint.position) <= PatrolStopDistance)
+        {
+            nextPoint = GetNextPathPoint();
+            //Debug.Log("Next Position : " + nextPoint);
+            if (nextPoint == null)
+            {
+                Debug.LogWarning("Way Point cannot be null !!!! >:(");
+            }
+            destination = nextPoint.position;
+            agent.speed = _enemyNormalSpeed;
+        }
         else
         {
-            if (reachedPreviousPoint)
-            {
-                nextPoint = GetNextPathPoint();
-                Debug.Log("Next Position : " + nextPoint);
-                if (nextPoint == null)
-                {
-                    Debug.LogWarning("Way Point cannot be null !!!! >:(");
-                }
-                agent.destination = nextPoint.position;
-            }
-            else if(Vector2.Distance(transform.position, nextPoint.position) <= PatrolStopDistance) 
-            {
-                reachedPreviousPoint = true;
-                Debug.Log(Vector2.Distance(transform.position, nextPoint.position));
-            }
+            destination = nextPoint.position;
         }
 
-           
-        //if (!reachedPreviousPoint)
-        //{
-        //    reachedPreviousPoint = false;
-        //    nextPoint = GetNextPathPoint();
-        //    destination = nextPoint.position;
-        //    Debug.Log("Next Position : " + nextPoint);
-        //}
-
-        //Debug.Log("Distance: " + Vector2.Distance(transform.position, nextPoint.position));
-        //if (Vector2.Distance(transform.position, nextPoint.position) <= PatrolStopDistance)
-        //{
-        //    reachedPreviousPoint = true;
-        //    Debug.Log("REACHEEED");
-        //}
-
-        //agent.SetDestination(destination);
+        agent.SetDestination(destination);
     }
 
     private Transform GetNextPathPoint()
