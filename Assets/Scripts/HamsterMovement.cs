@@ -22,6 +22,8 @@ public class HamsterMovement : MonoBehaviour, ISoundMaker
 	private bool makingLoudNoise = false;
 	private bool notMakingNoise = false;
 
+	private bool inCarpetZone = false;
+
 	private Rigidbody2D rb;
 
 	Vector2 movement;
@@ -58,44 +60,53 @@ public class HamsterMovement : MonoBehaviour, ISoundMaker
 		HandleNoiseMaking();
 	}
 
-	private void HandleNoiseMaking()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
+		if(collision.tag == "Carpet")
+			inCarpetZone = true;
 
-		Debug.Log(rb.position + movement.normalized * moveSpeed * Time.fixedDeltaTime);
-		if (rb.velocity.magnitude >= loudSpeedStarts)
-		{
-			//LOUD NOISE
-			OnLoudSoundMade?.Invoke(transform.position);
-			Debug.LogWarning("MAKING LOUD NOISE " + rb.velocity);
-            if (!makingLoudNoise)
-            {
-				_noiseSpriteRenderer.sprite = _loudNoiseWave;
-				makingLoudNoise = true;
-				makingQuiteNoise = false;
-				notMakingNoise = false;
-			}
-		}
-		else if(rb.velocity.magnitude >= quiteSpeedStarts)
-        {
-			OnQuiteSoundMade?.Invoke(transform.position);
-			Debug.LogWarning("MAKING QUITE NOISE " + rb.velocity);
-			if (!makingQuiteNoise)
-			{
-				_noiseSpriteRenderer.sprite = _quiteNoiseWave;
-				makingQuiteNoise = true;
-				makingLoudNoise = false;
-				notMakingNoise = false;
-			}
-		}
-        else
+	}
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+		if (collision.tag == "Carpet")
+			inCarpetZone = false;
+	}
+
+    private void HandleNoiseMaking()
+    {
+		if(movement.normalized == Vector2.zero)
         {
             if (!notMakingNoise)
             {
 				_noiseSpriteRenderer.sprite = null;
 				notMakingNoise = true;
-				makingLoudNoise = true;
-				makingQuiteNoise = true;
+				makingLoudNoise = false;
+				makingQuiteNoise = false;
 			}
+			return;
         }
+
+        if (inCarpetZone)
+        {
+            if (!makingQuiteNoise)
+            {
+				_noiseSpriteRenderer.sprite = _quiteNoiseWave;
+				makingQuiteNoise = true;
+				notMakingNoise = false;
+				makingLoudNoise = false;
+			}
+			OnQuiteSoundMade?.Invoke(transform.position);
+        }
+        else
+        {
+			if (!makingLoudNoise)
+			{
+				_noiseSpriteRenderer.sprite = _loudNoiseWave;
+				makingLoudNoise = true;
+				makingQuiteNoise = false;
+				notMakingNoise = false;
+			}
+			OnLoudSoundMade?.Invoke(transform.position);
+		}
 	}
 }
