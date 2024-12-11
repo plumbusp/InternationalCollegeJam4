@@ -11,15 +11,42 @@ public class HamsterMovement : MonoBehaviour, ISoundMaker
 	public event Action<Vector3> OnQuiteSoundMade;
     public event Action<Vector3> OnSuperLoudSoundMade;
 
-	public bool InSafeSpot { get; set; }
+	private bool _InSafeSpot;
+	public bool InSafeSpot
+    {
+        get
+        {
+			return _InSafeSpot;
+		}
+        set
+        {
+			if (value == true)
+				foreach (var renderer in _SpriteRenderers)
+					renderer.color = _shadowColor;
 
-    [SerializeField] private float moveSpeed = 5f;
+			else
+				foreach (var renderer in _SpriteRenderers)
+					renderer.color = _normalColor;
+
+			_InSafeSpot = value;
+		}
+	}
+
+
+	[Header("Movement")]
+	[SerializeField] private float moveSpeed = 5f;
 
 	[Header ("Noise")]
 	[SerializeField] private bool _usesNoise = false;
 	[SerializeField] private SpriteRenderer _noiseSpriteRenderer;
 	[SerializeField] private Sprite _loudNoiseWave;
 	[SerializeField] private Sprite _quiteNoiseWave;
+
+	[Space(5f)]
+	[Header("Shadow")]
+	[SerializeField] private List<SpriteRenderer> _SpriteRenderers;
+	[SerializeField] private Color _shadowColor;
+	private Color _normalColor;
 
 	private bool makingQuiteNoise = false;
 	private bool makingLoudNoise = false;
@@ -38,6 +65,7 @@ public class HamsterMovement : MonoBehaviour, ISoundMaker
 	{
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
+		_normalColor = _SpriteRenderers[0].color;
 	}
 
 	void Update()
