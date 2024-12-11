@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.GraphicsBuffer;
 
 public class EnemyVisionAI : MonoBehaviour
 {
@@ -15,12 +17,20 @@ public class EnemyVisionAI : MonoBehaviour
     [Header("References")]
     [SerializeField] private FieldOfView fieldOfView;
     [SerializeField] private NavMeshAgent agent;
-    [SerializeField] private HamsterMovement target;
+    [SerializeField] private HamsterMovement player;
     [SerializeField] private List<Transform> _wayPointsList;
+
+    [Header("Mouse Settings & References")]
+    [SerializeField] private Transform mouse;
+    [SerializeField] private float _mouseEatingTime;
+    private WaitForSeconds _eatMouse;
 
     private Queue<Transform> _wayPoints = new Queue<Transform>();
 
-    private bool _isFollowingTarget;
+    private bool _isFollowingPlayer;
+    private bool _isFollowingMouse = false;
+    private bool _isWaiting = false;
+
     private bool _playerIsDead;
     private Vector3 _lastSeen;
 
@@ -31,6 +41,9 @@ public class EnemyVisionAI : MonoBehaviour
         agent.speed = _enemyNormalSpeed;
 
         fieldOfView.OnPlayerDetected += StartTargetFollowing;
+        fieldOfView.OnMouseDetected += StartMouseFollowing;
+
+        _eatMouse = new WaitForSeconds(_mouseEatingTime);
 
         foreach (var point in _wayPointsList)
         {
@@ -48,12 +61,21 @@ public class EnemyVisionAI : MonoBehaviour
     private void Update()
     {
         UpdateFieldOfView();
-        if (_playerIsDead)
+        if (_playerIsDead || _isWaiting)
             return;
 
         SmoothRotate();
 
-        if (_isFollowingTarget)
+        if(_isFollowingMouse)
+        {
+            Debug.Log("Following mouse");
+            if (Vector2.Distance(transform.position, mouse.transform.position) <= _deathRange)
+            {
+                StartCoroutine(EatMouse());
+            }
+            agent.SetDestination(mouse.transform.position);
+        }
+        else if (_isFollowingPlayer)
         {
             HandleChasing();
         }
@@ -65,10 +87,17 @@ public class EnemyVisionAI : MonoBehaviour
 
     private void StartTargetFollowing()
     {
-        if (target.InSafeSpot || _playerIsDead)
+        if (player.InSafeSpot || _playerIsDead)
             return;
 
-        _isFollowingTarget = true;
+        _isFollowingPlayer = true;
+        agent.speed = _enemyChaseSpeed;
+    }
+
+    private void StartMouseFollowing()
+    {
+        player.InSafeSpot = true;
+        _isFollowingMouse = true;
         agent.speed = _enemyChaseSpeed;
     }
 
@@ -80,27 +109,29 @@ public class EnemyVisionAI : MonoBehaviour
 
     private void SmoothRotate()
     {
-        if (agent.velocity.sqrMagnitude > 0.01f) // Using sqrMagnitude for efficiency
-        {
-            Vector2 direction = agent.velocity.normalized;
-            float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            float smoothedAngle = Mathf.LerpAngle(transform.eulerAngles.z, targetAngle, Time.deltaTime * smooothRotationTime);
-            transform.rotation = Quaternion.Euler(0, 0, smoothedAngle);
-        }
+        //if (agent.velocity.sqrMagnitude > 0.01f) // Using sqrMagnitude for efficiency
+        //{
+        //    Vector2 direction = agent.velocity.normalized;
+        //    float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        //    float smoothedAngle = Mathf.LerpAngle(transform.eulerAngles.z, targetAngle, Time.deltaTime * smooothRotationTime);
+        //    transform.rotation = Quaternion.Euler(0, 0, smoothedAngle);
+        //}
+        Vector2 direction = agent.velocity.normalized;
+        transform.up = direction;
     }
 
     private void HandleChasing()
     {
         if (fieldOfView.IsTarget)
         {
-            if (Vector2.Distance(transform.position, target.transform.position) <= _deathRange)
+            if (Vector2.Distance(transform.position, player.transform.position) <= _deathRange)
             {
                 EatPlayer();
                 return;
             }
 
-            agent.SetDestination(target.transform.position);
-            _lastSeen = target.transform.position;
+            agent.SetDestination(player.transform.position);
+            _lastSeen = player.transform.position;
         }
         else
         {
@@ -122,7 +153,7 @@ public class EnemyVisionAI : MonoBehaviour
 
     private void StopChasing()
     {
-        _isFollowingTarget = false;
+        _isFollowingPlayer = false;
         agent.speed = _enemyNormalSpeed;
         agent.SetDestination(_lastSeen);
     }
@@ -132,5 +163,14 @@ public class EnemyVisionAI : MonoBehaviour
         var next = _wayPoints.Dequeue();
         _wayPoints.Enqueue(next);
         return next;
+    }
+
+    private IEnumerator EatMouse()
+    {
+        _isWaiting = true;
+        _isFollowingMouse = false;
+        yield return _eatMouse;
+        _isWaiting = false;
+        player.InSafeSpot = false;
     }
 }
