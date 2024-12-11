@@ -77,8 +77,6 @@ public class HamsterMovement : MonoBehaviour, ISoundMaker
 		animator.SetFloat("x", movement.x);
         animator.SetFloat("y", movement.y);
 
-		Debug.Log(InSafeSpot);
-
         /*animator.SetFloat("Horizontal",movement.x);
 		animator.SetFloat("Vertical",movement.y);
 		animator.SetFloat("Speed",movement.sqrMagnitude);*/
