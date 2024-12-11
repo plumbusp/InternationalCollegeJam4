@@ -7,67 +7,70 @@ using UnityEngine;
 public class Lamp : MonoBehaviour
 {
     [Header("Time Parameters")]
-    [SerializeField] private float _lightSeconds;
-    private WaitForSeconds _lightWait;
-    [SerializeField] private float _darkSeconds;
-    private WaitForSeconds _darkWait;
-    [SerializeField] private bool _startWithLight;
+    [SerializeField] private float _lightSeconds = 2f;
+    [SerializeField] private float _darkSeconds = 2f;
+    [SerializeField] private bool _startWithLight = true;
 
-    [Space(8f)]
     [Header("Visuals")]
     [SerializeField] private GameObject _light;
     [SerializeField] private GameObject _shadow;
 
-    [Space(8f)]
-    [Header("Shadow parameters")]
-    [SerializeField] private Transform _middlePoint;
-    [SerializeField] private float radius;
+    [Header("Detection Parameters")]
+    [SerializeField] private Collider2D _triggerCollider;
+    [SerializeField] private float checkRadius = 5f;
     [SerializeField] private HamsterMovement hamster;
 
-
+    private WaitForSeconds _lightWait;
+    private WaitForSeconds _darkWait;
     private bool _turnedOn;
+
     private void Start()
     {
         _lightWait = new WaitForSeconds(_lightSeconds);
         _darkWait = new WaitForSeconds(_darkSeconds);
+        _triggerCollider.enabled = false;
 
         StartCoroutine(LightFlickering());
     }
-
-    private void Update()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (_turnedOn)
-        {
-            if (hamster.InSafeSpot)
-            {
-                hamster.InSafeSpot = false;
-            }
-            return;
-        }
-
-        bool playerDetected = Physics2D.OverlapCircleAll(_middlePoint.position, radius)
-                              .Any(collider => collider.tag =="Player");
-        hamster.InSafeSpot = playerDetected;
+        if (collision.tag == "Player")
+            hamster.InSafeSpot = true;
     }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.tag == "Player")
+            hamster.InSafeSpot = false;
+    }
+
     private IEnumerator LightFlickering()
     {
         while (true)
         {
             SetLightState(_startWithLight);
             yield return _startWithLight ? _lightWait : _darkWait;
+
             _startWithLight = !_startWithLight;
         }
     }
 
-    private void SetLightState(bool lightsOn)
+    private void SetLightState(bool lightOn)
     {
-        _turnedOn = lightsOn;
-        _light.SetActive(lightsOn);
-        _shadow.SetActive(!lightsOn);
+        _turnedOn = lightOn;
+        _light.SetActive(lightOn);
+        _shadow.SetActive(!lightOn);
+        _triggerCollider.enabled = !lightOn;
+
+        if (_turnedOn && Vector2.Distance(transform.position, hamster.transform.position) <= checkRadius)
+        {
+            hamster.InSafeSpot = false;
+        }
     }
+
     private void OnDrawGizmos()
     {
-        Gizmos.DrawSphere(_middlePoint.position, radius);
         Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, checkRadius);
     }
 }
