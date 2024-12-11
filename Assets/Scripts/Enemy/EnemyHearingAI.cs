@@ -98,13 +98,20 @@ public class EnemyHearingAI : MonoBehaviour
     }
     private void HandleQuiteSound(Vector3 fromWhere)
     {
-        Vector3 direction = fromWhere - transform.position;
-        Quaternion.LookRotation(direction, Vector3.up);
-        agent.speed = _enemyChaseSpeed;
-        agent.SetDestination(fromWhere);
-        _Investigating = true;
+        if(Vector2.Distance(transform.position, fromWhere) <= _closeHearingRadius)
+        {
+            Vector3 direction = fromWhere - transform.position;
+            Quaternion.LookRotation(direction, Vector3.up);
+            agent.speed = _enemyChaseSpeed;
+            agent.SetDestination(fromWhere);
+            _Investigating = true;
 
-        Debug.Log("I hear something...");
+            Debug.Log("I hear something...");
+        }
+        else
+        {
+            Debug.Log("Meh, not bothered");
+        }
     }
 
     private void SmoothRotate2D()
