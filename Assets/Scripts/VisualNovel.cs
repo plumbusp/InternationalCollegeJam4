@@ -15,15 +15,13 @@ public class VisualNovel : MonoBehaviour
 
     [Header("Images")]
     [SerializeField] private List<Image> _images;
-
     private Queue<Image> _imagesQueue = new Queue<Image>();
+    private List<Image> _activatedImages = new List<Image>();
 
-    private Image[] _activatedImages;
     Image nextImage;
 
     private void Start()
     {
-        _activatedImages = new Image[_oneSlideCapasity];
         _waitUntilNextPicture = new WaitForSeconds(_timeUntilNextPicture);
 
         foreach (Image pic in _images)
@@ -45,32 +43,36 @@ public class VisualNovel : MonoBehaviour
     {
         while (true)
         {
+
+            if (_imagesQueue.Count == 0)
+            {
+                Debug.Log("Visual novel is done!");
+                break;
+            }
+
             if (_currectFullness < _oneSlideCapasity)
             {
+                Debug.Log(_currectFullness);
                 nextImage = _imagesQueue.Dequeue();
-                _activatedImages[_currectFullness] = nextImage;
                 nextImage.gameObject.SetActive(true);
+                _activatedImages.Add(nextImage);
+                _currectFullness++;
             }
             else
             {
                 foreach (Image image in _activatedImages)
                 {
-                    Debug.Log("Deactivates");
                     image.gameObject.SetActive(false);
                 }
-                Array.Clear(_activatedImages, 0, _activatedImages.Length);
+                _activatedImages.Clear();
+                _currectFullness = 1;
 
-                _currectFullness = 0;
                 nextImage = _imagesQueue.Dequeue();
-                _activatedImages[_currectFullness] = nextImage;
                 nextImage.gameObject.SetActive(true);
+                _activatedImages.Add(nextImage);
             }
+
             yield return _waitUntilNextPicture;
-            if(_imagesQueue.Peek() == null)
-            {
-                Debug.Log("Visual novel is done!");
-                break;
-            }
         }
         
     }
