@@ -26,4 +26,10 @@ public class Mouse : MonoBehaviour
         _cheeseTransform = cheeseTransform;
         _isActivated = true;
     }
+
+    public void Eat()
+    {
+        gameObject.SetActive(false);
+        Debug.Log("Mouse is deafeated!");
+    }
 }

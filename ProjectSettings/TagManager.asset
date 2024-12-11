@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Carpet
   - Cheese
+  - Mouse
   layers:
   - Default
   - TransparentFX

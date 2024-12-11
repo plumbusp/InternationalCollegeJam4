@@ -64,7 +64,6 @@ public class FieldOfView : MonoBehaviour {
                 }
                 else if(raycastHit2D.collider.tag == mouseTag)
                 {
-                    Debug.Log("Following mouse");
                     OnMouseDetected?.Invoke();
                 }
             }
