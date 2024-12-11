@@ -50,6 +50,7 @@ public class EnemyVisionAI : MonoBehaviour
         UpdateFieldOfView();
         if (_playerIsDead)
             return;
+
         SmoothRotate();
 
         if (_isFollowingTarget)
