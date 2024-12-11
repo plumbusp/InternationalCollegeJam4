@@ -216,6 +216,7 @@ GameObject:
   m_Component:
   - component: {fileID: 811533713}
   - component: {fileID: 811533712}
+  - component: {fileID: 811533714}
   m_Layer: 0
   m_Name: Box small
   m_TagString: Untagged
@@ -290,6 +291,73 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &811533714
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 811533711}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: -0.4}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 5.12, y: 5.12}
+    newSize: {x: 5.12, y: 5.12}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 3.2, y: 3}
+  m_EdgeRadius: 0
+--- !u!1 &872993364 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7701890898335522720, guid: b4df2ec29ffa12a43b5b894eb29eed1f, type: 3}
+  m_PrefabInstance: {fileID: 22206256807030959}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &872993370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 872993364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 455f96dad513ee44cb486e0d6f0d0a1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 5
+  _usesNoise: 0
+  _noiseSpriteRenderer: {fileID: 0}
+  _loudNoiseWave: {fileID: 0}
+  _quiteNoiseWave: {fileID: 0}
 --- !u!1 &1110355048
 GameObject:
   m_ObjectHideFlags: 0
@@ -655,10 +723,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hamster
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 7880990418242532961, guid: b4df2ec29ffa12a43b5b894eb29eed1f, type: 3}
+      propertyPath: m_Size.x
+      value: 3.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7880990418242532961, guid: b4df2ec29ffa12a43b5b894eb29eed1f, type: 3}
+      propertyPath: m_Size.y
+      value: 3.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7880990418242532961, guid: b4df2ec29ffa12a43b5b894eb29eed1f, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.01
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 3532635090794368873, guid: b4df2ec29ffa12a43b5b894eb29eed1f, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7701890898335522720, guid: b4df2ec29ffa12a43b5b894eb29eed1f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 872993370}
   m_SourcePrefab: {fileID: 100100000, guid: b4df2ec29ffa12a43b5b894eb29eed1f, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
