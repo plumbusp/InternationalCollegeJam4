@@ -1990,6 +1990,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 527240389}
     - target: {fileID: 752552535667850787, guid: 7d3e854e170cb084080400c2decf1217, type: 3}
+      propertyPath: deathRange
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 752552535667850787, guid: 7d3e854e170cb084080400c2decf1217, type: 3}
       propertyPath: fieldOfView
       value: 
       objectReference: {fileID: 1747476254}
