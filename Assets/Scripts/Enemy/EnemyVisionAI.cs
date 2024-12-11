@@ -14,7 +14,7 @@ public class EnemyVisionAI : MonoBehaviour
     [SerializeField] private float _enemyNormalSpeed;
     [SerializeField] private FieldOfView fieldOfView;
     [SerializeField] private NavMeshAgent agent;
-    [SerializeField] private Transform target;
+    [SerializeField] private HamsterMovement target;
     [SerializeField] private float PatrolStopDistance = 1f;
 
 
@@ -61,14 +61,14 @@ public class EnemyVisionAI : MonoBehaviour
             //Active chasing
             if (fieldOfView.IsTarget)
             {
-                if(Vector2.Distance(transform.position, target.position) <= _deathRange)
+                if(Vector2.Distance(transform.position, target.transform.position) <= _deathRange)
                 {
                     agent.isStopped = true;
                     Debug.Log("Player LOST!");
                     return;
                 }
-                agent.SetDestination(target.position);
-                _lastSeen = target.position;
+                agent.SetDestination(target.transform.position);
+                _lastSeen = target.transform.position;
             }
             //check the point
             else
@@ -87,35 +87,10 @@ public class EnemyVisionAI : MonoBehaviour
         }
     }
 
-    private void Destination()
-    {
-        if (_isFollowingTarget)
-        {
-            if(agent.remainingDistance <= PatrolStopDistance)
-            {
-                _isFollowingTarget = false;
-            }
-            return;
-        }
-
-        var destination = Vector3.zero;
-
-        if (nextPoint == null || Vector2.Distance(transform.position, nextPoint.position) <= PatrolStopDistance)
-        {
-            nextPoint = GetNextPathPoint();
-            agent.speed = _enemyNormalSpeed;
-            destination = nextPoint.position;
-        }
-        else
-        {
-            destination = nextPoint.position;
-        }
-
-        agent.SetDestination(destination);
-    }
-
     private void StartTargetFollowing()
     {
+        if (target.InSafeSpot)
+            return;
         _isFollowingTarget = true;
         agent.speed = _enemyChaseSpeed;
     }

@@ -11,8 +11,12 @@ public class HamsterMovement : MonoBehaviour, ISoundMaker
 	public event Action<Vector3> OnQuiteSoundMade;
     public event Action<Vector3> OnSuperLoudSoundMade;
 
+	public bool InSafeSpot { get; set; }
+
     [SerializeField] private float moveSpeed = 5f;
 
+	[Header ("Noise")]
+	[SerializeField] private bool _usesNoise = false;
 	[SerializeField] private SpriteRenderer _noiseSpriteRenderer;
 	[SerializeField] private Sprite _loudNoiseWave;
 	[SerializeField] private Sprite _quiteNoiseWave;
@@ -45,6 +49,8 @@ public class HamsterMovement : MonoBehaviour, ISoundMaker
 		animator.SetFloat("x", movement.x);
         animator.SetFloat("y", movement.y);
 
+		Debug.Log(InSafeSpot);
+
         /*animator.SetFloat("Horizontal",movement.x);
 		animator.SetFloat("Vertical",movement.y);
 		animator.SetFloat("Speed",movement.sqrMagnitude);*/
@@ -56,17 +62,24 @@ public class HamsterMovement : MonoBehaviour, ISoundMaker
 		// Movement
 		//rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
 		rb.MovePosition(rb.position + movement.normalized * moveSpeed * Time.fixedDeltaTime);
-		HandleNoiseMaking();
+        if (_usesNoise)
+			HandleNoiseMaking();
 	}
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+		if (!_usesNoise)
+			return;
+
 		if(collision.tag == "Carpet")
 			inCarpetZone = true;
 
 	}
     private void OnTriggerExit2D(Collider2D collision)
     {
+		if (!_usesNoise)
+			return;
+
 		if (collision.tag == "Carpet")
 			inCarpetZone = false;
 	}
