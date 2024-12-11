@@ -31,11 +31,19 @@ public class EnemyHearingAI : MonoBehaviour
     private bool _Investigating = false;
     private bool _waitingOnPlace = false;
 
+    private int _currentSoundPriority;
+    private int _nonePriority = 0;
+    private int _lowPriority = 1;
+    private int _normalPriority = 2;
+    private int _urgentPriority = 3;
+
     private void Start()
     {
         agent.updateRotation = false;
         agent.updateUpAxis = false;
+
         wait = new WaitForSeconds(_timeOnInvestigation);
+
         agent.speed = _enemyNormalSpeed;
 
         foreach (var t in _wayPointsList)
@@ -48,14 +56,18 @@ public class EnemyHearingAI : MonoBehaviour
         foreach (var maker in _soundsMakers)
         {
             var soundM = maker.GetComponent<ISoundMaker>();
+            soundM.OnSuperLoudSoundMade += HandleSuperLoudSound;
             soundM.OnLoudSoundMade += HandleLoudSound;
             soundM.OnQuiteSoundMade += HandleQuiteSound;
         }
+
+        _currentSoundPriority = _nonePriority;
         agent.SetDestination(GetNextPathPoint().position);
     }
 
     private void Update()
     {
+        Debug.Log(_currentSoundPriority);
         SmoothRotate2D();
 
         if (_waitingOnPlace || _Investigating)
@@ -89,17 +101,37 @@ public class EnemyHearingAI : MonoBehaviour
         }
     }
 
-    private void HandleLoudSound(Vector3 fromWhere)
+    private void HandleSuperLoudSound(Vector3 fromWhere)
     {
+        if (!CheckSoundPriority(_urgentPriority))
+            return;
+
+        agent.isStopped = false;
         agent.speed = _enemyChaseSpeed;
         agent.SetDestination(fromWhere);
         _Investigating = true;
-        Debug.Log("Going to investigate loud sound");
+        Debug.Log("Now what was THAT ?!!");
+    }
+
+    private void HandleLoudSound(Vector3 fromWhere)
+    {
+        if(!CheckSoundPriority(_normalPriority))
+            return;
+
+        agent.isStopped = false;
+        agent.speed = _enemyChaseSpeed;
+        agent.SetDestination(fromWhere);
+        _Investigating = true;
+        Debug.Log("Going to investigate loud sound ");
     }
     private void HandleQuiteSound(Vector3 fromWhere)
     {
-        if(Vector2.Distance(transform.position, fromWhere) <= _closeHearingRadius)
+        if (!CheckSoundPriority(_lowPriority))
+            return;
+
+        if (Vector2.Distance(transform.position, fromWhere) <= _closeHearingRadius)
         {
+            agent.isStopped = false;
             Vector3 direction = fromWhere - transform.position;
             Quaternion.LookRotation(direction, Vector3.up);
             agent.speed = _enemyChaseSpeed;
@@ -110,7 +142,7 @@ public class EnemyHearingAI : MonoBehaviour
         }
         else
         {
-            Debug.Log("Meh, not bothered");
+            //Debug.Log("Meh, not bothered");
         }
     }
 
@@ -142,6 +174,21 @@ public class EnemyHearingAI : MonoBehaviour
         agent.isStopped = false;
         _Investigating = false;
         _waitingOnPlace = false;
+        _currentSoundPriority = _nonePriority;
+    }
+
+    /// <summary>
+    /// Returns true if new sound priority is higher then current sound priority
+    /// </summary>
+    /// <returns></returns>
+    private bool CheckSoundPriority(int soundPriority)
+    {
+        if(_currentSoundPriority <= soundPriority)
+        {
+            _currentSoundPriority = soundPriority;
+            return true;
+        }
+        return false;
     }
 
     private void OnDrawGizmos()

@@ -441,6 +441,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 3532635090794368873, guid: b4df2ec29ffa12a43b5b894eb29eed1f, type: 3}
+      propertyPath: moveSpeed
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3532635090794368873, guid: b4df2ec29ffa12a43b5b894eb29eed1f, type: 3}
       propertyPath: _loudNoiseWave
       value: 
       objectReference: {fileID: 21300000, guid: 7c64c7feaa1f44b488a526cceab679d4, type: 3}

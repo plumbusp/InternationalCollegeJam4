@@ -9,8 +9,9 @@ public class HamsterMovement : MonoBehaviour, ISoundMaker
 {
 	public event Action<Vector3> OnLoudSoundMade;
 	public event Action<Vector3> OnQuiteSoundMade;
+    public event Action<Vector3> OnSuperLoudSoundMade;
 
-	[SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float moveSpeed = 5f;
 	[SerializeField] private float loudSpeedStarts = 4f;
 	[SerializeField] private float quiteSpeedStarts = 2f;
 
