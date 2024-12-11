@@ -1,136 +1,205 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.GraphicsBuffer;
 
 public class EnemyVisionAI : MonoBehaviour
 {
     [Header("Settings")]
-    [SerializeField] private float _enemyChaseSpeed;
-    [SerializeField] private float _enemyNormalSpeed;
-    [SerializeField] private float _deathRange;
-    [SerializeField] private float PatrolStopDistance = 1f;
-    [SerializeField] private float smooothRotationTime = 3f;
+    [SerializeField] private float chaseSpeed = 5f;
+    [SerializeField] private float normalSpeed = 3f;
+    [SerializeField] private float deathRange = 1.5f;
+    [SerializeField] private float patrolStopDistance = 1f;
+    [SerializeField] private float smoothRotationSpeed = 5f;
 
     [Header("References")]
     [SerializeField] private FieldOfView fieldOfView;
     [SerializeField] private NavMeshAgent agent;
-    [SerializeField] private HamsterMovement target;
-    [SerializeField] private List<Transform> _wayPointsList;
+    [SerializeField] private HamsterMovement player;
+    [SerializeField] private List<Transform> waypoints;
 
-    private Queue<Transform> _wayPoints = new Queue<Transform>();
+    [Header("Mouse Settings")]
+    [SerializeField] private Mouse mouse;
+    [SerializeField] private float mouseEatingTime = 3f;
 
-    private bool _isFollowingTarget;
-    private bool _playerIsDead;
-    private Vector3 _lastSeen;
+    private WaitForSeconds mouseEatingDelay;
+    private Queue<Transform> waypointQueue;
+    private Transform currentTarget;
+
+    private bool isPlayerDead = false;
+    private bool isWaiting = false;
+    private Vector3 lastKnownPosition;
+
+    private Vector2 _distance;
 
     private void Start()
     {
-        agent.updateRotation = false;
-        agent.updateUpAxis = false;
-        agent.speed = _enemyNormalSpeed;
+        InitializeAgent();
+        InitializeWaypoints();
+        SubscribeToEvents();
 
-        fieldOfView.OnPlayerDetected += StartTargetFollowing;
+        mouseEatingDelay = new WaitForSeconds(mouseEatingTime);
 
-        foreach (var point in _wayPointsList)
-        {
-            if (point == null)
-            {
-                Debug.LogWarning("Waypoint cannot be null!");
-                continue;
-            }
-            _wayPoints.Enqueue(point);
-        }
-
-        agent.SetDestination(GetNextPathPoint().position);
+        MoveToNextWaypoint();
     }
 
     private void Update()
     {
         UpdateFieldOfView();
-        if (_playerIsDead)
-            return;
+        if (isPlayerDead || isWaiting) return;
+        SmoothRotateTowardsMovement();
 
-        SmoothRotate();
-
-        if (_isFollowingTarget)
+        if (currentTarget != null)
         {
-            HandleChasing();
+            ProcessTargetBehavior();
         }
-        else if (agent.remainingDistance <= PatrolStopDistance)
+        else if (agent.remainingDistance <= patrolStopDistance)
         {
-            PatrolToNextPoint();
+            MoveToNextWaypoint();
         }
     }
 
-    private void StartTargetFollowing()
+    #region Initialization
+    private void InitializeAgent()
     {
-        if (target.InSafeSpot || _playerIsDead)
-            return;
-
-        _isFollowingTarget = true;
-        agent.speed = _enemyChaseSpeed;
+        agent.updateRotation = false;
+        agent.updateUpAxis = false;
+        agent.speed = normalSpeed;
     }
 
+    private void InitializeWaypoints()
+    {
+        waypointQueue = new Queue<Transform>();
+        foreach (var waypoint in waypoints)
+        {
+            if (waypoint != null)
+            {
+                waypointQueue.Enqueue(waypoint);
+            }
+            else
+            {
+                Debug.LogWarning("Waypoint is null! Skipping...");
+            }
+        }
+    }
+
+    private void SubscribeToEvents()
+    {
+        fieldOfView.OnPlayerDetected += HandlePlayerDetection;
+        fieldOfView.OnMouseDetected += HandleMouseDetection;
+    }
+    #endregion
+
+    #region Field of View
     private void UpdateFieldOfView()
     {
         fieldOfView.SetOrigin(transform.position);
         fieldOfView.SetDirection(transform.right);
     }
+    #endregion
 
-    private void SmoothRotate()
+    #region Target Handling
+    private void HandlePlayerDetection()
     {
-        if (agent.velocity.sqrMagnitude > 0.01f) // Using sqrMagnitude for efficiency
-        {
-            Vector2 direction = agent.velocity.normalized;
-            float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            float smoothedAngle = Mathf.LerpAngle(transform.eulerAngles.z, targetAngle, Time.deltaTime * smooothRotationTime);
-            transform.rotation = Quaternion.Euler(0, 0, smoothedAngle);
-        }
+        if (player.InSafeSpot || isPlayerDead) return;
+
+        SetTarget(player.transform, chaseSpeed);
     }
 
-    private void HandleChasing()
+    private void HandleMouseDetection()
     {
-        if (fieldOfView.IsTarget)
+        player.InSafeSpot = true;
+        SetTarget(mouse.transform, chaseSpeed);
+    }
+
+    private void SetTarget(Transform target, float speed)
+    {
+        currentTarget = target;
+        agent.speed = speed;
+    }
+
+    private void ProcessTargetBehavior()
+    {
+        agent.SetDestination(currentTarget.position);
+
+        if (currentTarget == player.transform)
         {
-            if (Vector2.Distance(transform.position, target.transform.position) <= _deathRange)
+            if (IsInRange(player.transform, deathRange))
             {
-                EatPlayer();
-                return;
+                HandlePlayerCaught();
             }
-
-            agent.SetDestination(target.transform.position);
-            _lastSeen = target.transform.position;
+            else if (!fieldOfView.IsTarget)
+            {
+                StopChasingPlayer();
+            }
         }
-        else
+        else if (currentTarget == mouse.transform)
         {
-            StopChasing();
+            Debug.Log(IsInRange(mouse.transform, deathRange) + "   " + Vector2.Distance(transform.position, currentTarget.position));
+            if (IsInRange(mouse.transform, deathRange))
+            {
+                StartCoroutine(HandleMouseInteraction());
+            }
         }
     }
+    #endregion
 
-    private void PatrolToNextPoint()
+    #region Target Interaction
+    private bool IsInRange(Transform target, float range)
     {
-        agent.SetDestination(GetNextPathPoint().position);
+        return Vector2.Distance(transform.position, target.position) <= range;
     }
 
-    private void EatPlayer()
+    private void HandlePlayerCaught()
     {
+        isPlayerDead = true;
         agent.isStopped = true;
-        _playerIsDead = true;
         Debug.Log("Player LOST!");
     }
 
-    private void StopChasing()
+    private void StopChasingPlayer()
     {
-        _isFollowingTarget = false;
-        agent.speed = _enemyNormalSpeed;
-        agent.SetDestination(_lastSeen);
+        currentTarget = null;
+        agent.speed = normalSpeed;
+        agent.SetDestination(lastKnownPosition);
     }
 
-    private Transform GetNextPathPoint()
+    private IEnumerator HandleMouseInteraction()
     {
-        var next = _wayPoints.Dequeue();
-        _wayPoints.Enqueue(next);
-        return next;
+        isWaiting = true;
+        currentTarget = null;
+
+        yield return mouseEatingDelay;
+
+        isWaiting = false;
+        player.InSafeSpot = false;
+        mouse.Eat();
+        MoveToNextWaypoint();
+    }
+    #endregion
+
+    #region Patrolling
+    private void MoveToNextWaypoint()
+    {
+        var nextWaypoint = waypointQueue.Dequeue();
+        waypointQueue.Enqueue(nextWaypoint);
+
+        agent.SetDestination(nextWaypoint.position);
+    }
+    #endregion
+
+    #region Rotation
+    private void SmoothRotateTowardsMovement()
+    {
+        if (agent.velocity.sqrMagnitude > 0.01f)
+        {
+            Vector2 direction = agent.velocity.normalized;
+            float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            float smoothedAngle = Mathf.LerpAngle(transform.eulerAngles.z, targetAngle, Time.deltaTime * smoothRotationSpeed);
+            transform.rotation = Quaternion.Euler(0, 0, smoothedAngle);
+        }
     }
 }
+    #endregion

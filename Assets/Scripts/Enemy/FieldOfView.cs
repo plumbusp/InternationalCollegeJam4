@@ -5,6 +5,7 @@ using System;
 public class FieldOfView : MonoBehaviour {
 
     public Action OnPlayerDetected;
+    public Action OnMouseDetected;
 
     Mesh mesh;
 
@@ -18,6 +19,7 @@ public class FieldOfView : MonoBehaviour {
     [SerializeField] float distance = 50f;
     [SerializeField] Vector3 offset;
     [SerializeField] string targetTag;
+    [SerializeField] string mouseTag;
     [SerializeField] LayerMask layerMask;
     [SerializeField] float noticeCoolDown;
 
@@ -53,10 +55,17 @@ public class FieldOfView : MonoBehaviour {
             RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, UtilsClass.GetVectorFromAngle(angle), distance, layerMask);
             Vector2 vertex = raycastHit2D.collider ? raycastHit2D.point : origin + MathHelper.AngleToVector2D(angle + transform.eulerAngles.y) * distance;
 
-            if (raycastHit2D.collider != null && raycastHit2D.collider.tag == targetTag)
+            if (raycastHit2D.collider != null) 
             {
-                OnPlayerDetected?.Invoke();
-                IsTarget = true;
+                if(raycastHit2D.collider.tag == targetTag)
+                {
+                    OnPlayerDetected?.Invoke();
+                    IsTarget = true;
+                }
+                else if(raycastHit2D.collider.tag == mouseTag)
+                {
+                    OnMouseDetected?.Invoke();
+                }
             }
 
 
