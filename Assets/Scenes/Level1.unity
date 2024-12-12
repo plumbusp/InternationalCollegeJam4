@@ -513,8 +513,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 713407721
+  m_SortingLayer: -4
   m_SortingOrder: -10
   m_Sprite: {fileID: 21300000, guid: aa8b9480fe296874bbc59c3f3159605a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -568,23 +568,23 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 913175293336214668, guid: e3266fefecab009469091971d6608d67, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.68
+      value: 0.9
       objectReference: {fileID: 0}
     - target: {fileID: 913175293336214668, guid: e3266fefecab009469091971d6608d67, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.68
+      value: 0.9
       objectReference: {fileID: 0}
     - target: {fileID: 913175293336214668, guid: e3266fefecab009469091971d6608d67, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.68
+      value: 0.9
       objectReference: {fileID: 0}
     - target: {fileID: 913175293336214668, guid: e3266fefecab009469091971d6608d67, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -4.44
+      value: -4.51
       objectReference: {fileID: 0}
     - target: {fileID: 913175293336214668, guid: e3266fefecab009469091971d6608d67, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.47
+      value: -3.01
       objectReference: {fileID: 0}
     - target: {fileID: 913175293336214668, guid: e3266fefecab009469091971d6608d67, type: 3}
       propertyPath: m_LocalPosition.z
@@ -618,49 +618,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 913175293336214668, guid: e3266fefecab009469091971d6608d67, type: 3}
-      propertyPath: m_ConstrainProportionsScale
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1787076567018307593, guid: e3266fefecab009469091971d6608d67, type: 3}
       propertyPath: m_Name
       value: Box
-      objectReference: {fileID: 0}
-    - target: {fileID: 3423157487358951208, guid: e3266fefecab009469091971d6608d67, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: fc0708563ee76cd448481504420cf3e7, type: 3}
-    - target: {fileID: 3423157487358951208, guid: e3266fefecab009469091971d6608d67, type: 3}
-      propertyPath: m_SortingLayer
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3423157487358951208, guid: e3266fefecab009469091971d6608d67, type: 3}
-      propertyPath: m_SortingLayerID
-      value: -1077137529
-      objectReference: {fileID: 0}
-    - target: {fileID: 9072321113690549415, guid: e3266fefecab009469091971d6608d67, type: 3}
-      propertyPath: m_Size.x
-      value: 3.3322434
-      objectReference: {fileID: 0}
-    - target: {fileID: 9072321113690549415, guid: e3266fefecab009469091971d6608d67, type: 3}
-      propertyPath: m_Size.y
-      value: 3.9282606
-      objectReference: {fileID: 0}
-    - target: {fileID: 9072321113690549415, guid: e3266fefecab009469091971d6608d67, type: 3}
-      propertyPath: m_Offset.x
-      value: -0.05182743
-      objectReference: {fileID: 0}
-    - target: {fileID: 9072321113690549415, guid: e3266fefecab009469091971d6608d67, type: 3}
-      propertyPath: m_Offset.y
-      value: 0.012956977
-      objectReference: {fileID: 0}
-    - target: {fileID: 9072321113690549415, guid: e3266fefecab009469091971d6608d67, type: 3}
-      propertyPath: m_SpriteTilingProperty.oldSize.x
-      value: 5.12
-      objectReference: {fileID: 0}
-    - target: {fileID: 9072321113690549415, guid: e3266fefecab009469091971d6608d67, type: 3}
-      propertyPath: m_SpriteTilingProperty.oldSize.y
-      value: 5.12
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1819,6 +1779,10 @@ PrefabInstance:
     - target: {fileID: 1473464975574834422, guid: d1f1ec9e5c78d4b4895ae6120bfa0f58, type: 3}
       propertyPath: m_Name
       value: CommonCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 1473464975574834422, guid: d1f1ec9e5c78d4b4895ae6120bfa0f58, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3553860404538095852, guid: d1f1ec9e5c78d4b4895ae6120bfa0f58, type: 3}
       propertyPath: m_Pivot.x

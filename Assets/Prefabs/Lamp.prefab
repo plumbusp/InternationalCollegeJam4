@@ -396,7 +396,7 @@ MonoBehaviour:
   _light: {fileID: 6409004227029700381}
   _shadow: {fileID: 2238472862410018890}
   _triggerCollider: {fileID: 525823941678580790}
-  checkRadius: 1.5
+  checkRadius: 1.75
   hamster: {fileID: 0}
 --- !u!58 &525823941678580790
 CircleCollider2D:
