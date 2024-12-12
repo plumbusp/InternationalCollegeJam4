@@ -41,6 +41,27 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 713407721
+    locked: 0
+  - name: BehindHamsterLayer3
+    uniqueID: 4137447413
+    locked: 0
+  - name: BehindHamsterLayer2
+    uniqueID: 3525970415
+    locked: 0
+  - name: BehindHamster
+    uniqueID: 1133561823
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: InFrontOfHamster
+    uniqueID: 3354798721
+    locked: 0
+  - name: InFrontOfHamsterLayer2
+    uniqueID: 3217829767
+    locked: 0
+  - name: InFrontOfHamsterLayer3
+    uniqueID: 3971175253
     locked: 0
