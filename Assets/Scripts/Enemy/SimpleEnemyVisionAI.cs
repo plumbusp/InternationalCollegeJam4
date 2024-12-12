@@ -94,7 +94,7 @@ public class SimpleEnemyVisionAI : MonoBehaviour
 
     private void HandleMouseDetection()
     {
-        player.InSafeSpot = true;
+        //player.InSafeSpot = true;
         SetTarget(mouse.transform, chaseSpeed);
     }
 
@@ -153,7 +153,7 @@ public class SimpleEnemyVisionAI : MonoBehaviour
         yield return mouseEatingDelay;
 
         isWaiting = false;
-        player.InSafeSpot = false;
+        //player.InSafeSpot = false;
         mouse.Eat();
     }
     #endregion

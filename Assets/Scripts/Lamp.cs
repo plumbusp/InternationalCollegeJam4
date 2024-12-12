@@ -64,6 +64,7 @@ public class Lamp : MonoBehaviour
 
         if (_turnedOn && Vector2.Distance(transform.position, hamster.transform.position) <= checkRadius)
         {
+            Debug.Log("Hamster VON");
             hamster.InSafeSpot = false;
         }
     }

@@ -17,6 +17,7 @@ public class NextLevelDoor : MonoBehaviour
     {
         if (collision.tag == "Player")
         {
+            collision.GetComponent<HamsterMovement>().InSafeSpot = true;
             _sceneFader.FadeIn();
         }
     }

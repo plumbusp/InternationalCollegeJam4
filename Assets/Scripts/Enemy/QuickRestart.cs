@@ -27,9 +27,7 @@ public class QuickRestart : MonoBehaviour
     private IEnumerator DelayAppear()
     {
         buttonimage.enabled = false;
-        Debug.Log("Set enabled false");
         yield return new WaitForSeconds(1.5f);
-        Debug.Log("Set enabled true");
         buttonimage.enabled = true;
     }
 }

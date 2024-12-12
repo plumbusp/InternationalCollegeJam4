@@ -9,20 +9,17 @@ public class SceneFader : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log("Awake");
         gameObject.SetActive(true);
         _animator.SetTrigger("FadeOut");
     }
     public void FadeIn()
     {
-        Debug.Log("FadeIN");
         IsAboutToFadeIn?.Invoke();
         gameObject.SetActive(true);
         _animator.SetTrigger("FadeIn");
     }
     public void Deactivate()
     {
-        Debug.Log("Deactivate");
         gameObject.SetActive(false);
     }
 
