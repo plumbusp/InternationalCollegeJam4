@@ -7,5 +7,7 @@ public enum MusicType
     HappyMusic,
     SadMusic,
     GameplayMusic,
-    MainMenu
+    MainMenu,
+    VisualNovel1,
+    VisualNovel2
 }
