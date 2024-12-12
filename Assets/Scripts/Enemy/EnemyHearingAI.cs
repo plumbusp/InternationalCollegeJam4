@@ -193,7 +193,7 @@ public class EnemyHearingAI : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawSphere(transform.position, _closeHearingRadius);
+        Gizmos.DrawWireSphere(transform.position, _closeHearingRadius);
         Gizmos.color = Color.yellow;
     }
 }

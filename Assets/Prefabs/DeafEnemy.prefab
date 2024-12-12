@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 3188304712133800102}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.19, y: -3.63, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -48,7 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chaseSpeed: 5
   normalSpeed: 3
-  deathRange: 1.5
+  deathRange: 2.5
   patrolStopDistance: 0.2
   smoothRotationSpeed: 5
   fieldOfView: {fileID: 0}
