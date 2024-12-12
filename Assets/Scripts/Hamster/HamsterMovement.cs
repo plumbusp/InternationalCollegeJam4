@@ -100,14 +100,13 @@ public class HamsterMovement : MonoBehaviour, ISoundMaker
 			HandleNoiseMaking();
 	}
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
 		if (!_usesNoise)
 			return;
 
-		if(collision.tag == "Carpet")
+		if (collision.tag == "Carpet")
 			inCarpetZone = true;
-
 	}
     private void OnTriggerExit2D(Collider2D collision)
     {

@@ -1,10 +1,8 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
-public class Lamp : MonoBehaviour
+public class SpecificLamp : MonoBehaviour
 {
     [Header("Time Parameters")]
     [SerializeField] private float _lightSeconds = 2f;
@@ -16,9 +14,10 @@ public class Lamp : MonoBehaviour
     [SerializeField] private GameObject _shadow;
 
     [Header("Detection Parameters")]
-    [SerializeField] private Collider2D _triggerCollider;
+    [SerializeField] private List<Collider2D> _triggerColliders;
     [SerializeField] private float checkRadius = 5f;
     [SerializeField] private HamsterMovement hamster;
+    [SerializeField] private Transform _additionalAreaCheck;
 
     private WaitForSeconds _lightWait;
     private WaitForSeconds _darkWait;
@@ -30,8 +29,8 @@ public class Lamp : MonoBehaviour
         _darkWait = new WaitForSeconds(_darkSeconds);
         StartCoroutine(LightFlickering());
 
-        if (_triggerCollider != null)
-            _triggerCollider.enabled = false;
+        foreach (var col in _triggerColliders)
+            col.enabled = false;
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -66,10 +65,15 @@ public class Lamp : MonoBehaviour
         _turnedOn = lightOn;
         _light.SetActive(lightOn);
         _shadow.SetActive(!lightOn);
-        if (_triggerCollider != null)
-            _triggerCollider.enabled = !lightOn;
+        foreach (var col in _triggerColliders)
+            col.enabled = !lightOn;
 
         if (_turnedOn && Vector2.Distance(transform.position, hamster.transform.position) <= checkRadius)
+        {
+            Debug.Log("Hamster VON");
+            hamster.InSafeSpot = false;
+        }
+        else if(_turnedOn && Vector2.Distance(_additionalAreaCheck.position, hamster.transform.position) <= checkRadius)
         {
             Debug.Log("Hamster VON");
             hamster.InSafeSpot = false;
