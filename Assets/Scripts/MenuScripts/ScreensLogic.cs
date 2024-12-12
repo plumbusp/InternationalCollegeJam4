@@ -12,8 +12,16 @@ public class ScreensLogic : MonoBehaviour
 
     private void Awake()
     {
-        Time.timeScale = 1;
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject); // Ensure only one instance exists
+            return;
+        }
+
         Instance = this;
+
+        Time.timeScale = 1;
+
         //Hide all panels
         _deadScreen.SetActive(false);
         _pauseMenu.SetActive(false);

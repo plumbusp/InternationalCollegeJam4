@@ -5,10 +5,25 @@ using UnityEngine.SceneManagement;
 public class SceneFader : MonoBehaviour
 {
     [SerializeField] private Animator _animator;
-    public event Action IsAboutToFadeOut;
+    public event Action IsAboutToFadeIn;
+
+    private void Awake()
+    {
+        Debug.Log("Awake");
+        gameObject.SetActive(true);
+        _animator.SetTrigger("FadeOut");
+    }
     public void FadeIn()
     {
+        Debug.Log("FadeIN");
+        IsAboutToFadeIn?.Invoke();
+        gameObject.SetActive(true);
         _animator.SetTrigger("FadeIn");
+    }
+    public void Deactivate()
+    {
+        Debug.Log("Deactivate");
+        gameObject.SetActive(false);
     }
 
     //Invokes righ after animation is played
