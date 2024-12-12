@@ -39,7 +39,7 @@ public class VisualNovel : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Debug.Log("Skip");
-            _sceneFader.TransferToNextScene();
+            _sceneFader.FadeIn();
         }
     }
 
@@ -51,7 +51,7 @@ public class VisualNovel : MonoBehaviour
             if (_imagesQueue.Count == 0)
             {
                 Debug.Log("Visual novel is done!");
-                _sceneFader.TransferToNextScene();
+                _sceneFader.FadeIn();
                 break;
             }
 
