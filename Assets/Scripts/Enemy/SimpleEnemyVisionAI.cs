@@ -5,87 +5,126 @@ using UnityEngine.AI;
 
 public class SimpleEnemyVisionAI : MonoBehaviour
 {
-    private Vector3 startPos;
-    private Quaternion startRotation;
-
-    private float smooothRotationTime = 3f;
-
     [Header("Settings")]
-
     [SerializeField] private float chaseSpeed = 5f;
     [SerializeField] private float normalSpeed = 3f;
     [SerializeField] private float deathRange = 1.5f;
+    [SerializeField] private float patrolStopDistance = 1f;
+    [SerializeField] private float smoothRotationSpeed = 5f;
 
     [Header("References")]
-
     [SerializeField] private FieldOfView fieldOfView;
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private HamsterMovement player;
+    [SerializeField] private List<Transform> waypoints;
+
+    private Vector3 _initialPosition;
+
+
+    private Queue<Transform> waypointQueue;
     private Transform currentTarget;
 
-
-    private Vector3 lastKnownPosition;
     private bool isPlayerDead = false;
+    private bool isWaiting = false;
+    private Vector3 lastKnownPosition;
 
     private void Start()
     {
-        startPos = transform.position;
-        startRotation = transform.rotation;
+        InitializeAgent();
+        InitializeWaypoints();
+        SubscribeToEvents();
 
-        fieldOfView.OnPlayerDetected += HandlePlayerDetection;
+        _initialPosition = transform.position;
     }
 
     private void Update()
     {
-        fieldOfView.SetOrigin(transform.position);
-        fieldOfView.SetDirection(transform.forward);
+        UpdateFieldOfView();
+        if (isPlayerDead || isWaiting) return;
 
-        Destination();
-
-        if (agent.remainingDistance <= .1f)
-            transform.rotation = Quaternion.Slerp(transform.rotation, startRotation, Time.deltaTime * smooothRotationTime);
+        if (currentTarget != null)
+        {
+            ProcessTargetBehavior();
+        }
+        else if (_initialPosition.magnitude <= patrolStopDistance)
+        {
+            agent.SetDestination(_initialPosition);
+        }
     }
 
-    private void Destination()
+    #region Initialization
+    private void InitializeAgent()
     {
-        var destination = Vector3.zero;
+        agent.updateRotation = false;
+        agent.updateUpAxis = false;
+        agent.speed = normalSpeed;
+    }
 
-        if(currentTarget != null)
+    private void InitializeWaypoints()
+    {
+        waypointQueue = new Queue<Transform>();
+        foreach (var waypoint in waypoints)
         {
-            if (fieldOfView.IsTarget)
+            if (waypoint != null)
             {
-                if (IsInRange(player.transform, deathRange))
-                {
-                    HandlePlayerCaught();
-                }
-                else if (!fieldOfView.IsTarget)
-                {
-                    StopChasingPlayer();
-                }
+                waypointQueue.Enqueue(waypoint);
+            }
+            else
+            {
+                Debug.LogWarning("Waypoint is null! Skipping...");
             }
         }
-        else
-        {
-            destination = startPos;
-            agent.stoppingDistance = 0;
-        }
-
-        agent.SetDestination(destination);
     }
+
+    private void SubscribeToEvents()
+    {
+        fieldOfView.OnPlayerDetected += HandlePlayerDetection;
+    }
+    #endregion
+
+    #region Field of View
+    private void UpdateFieldOfView()
+    {
+        fieldOfView.SetOrigin(transform.position);
+        fieldOfView.SetDirection(-transform.up);
+    }
+    #endregion
 
     private void HandlePlayerDetection()
     {
-        if (isPlayerDead) return;
+        if (player.InSafeSpot || isPlayerDead) return;
 
-        currentTarget = player.transform;
-        agent.SetDestination(currentTarget.position);
-        agent.speed = chaseSpeed;
+        SetTarget(player.transform, chaseSpeed);
     }
-    private void StopChasingPlayer()
+
+    private void SetTarget(Transform target, float speed)
     {
-        currentTarget = null;
-        agent.speed = normalSpeed;
-        agent.SetDestination(lastKnownPosition);
+        currentTarget = target;
+        agent.speed = speed;
+    }
+
+    private void ProcessTargetBehavior()
+    {
+        agent.SetDestination(currentTarget.position);
+
+        if (currentTarget == player.transform)
+        {
+            if (IsInRange(player.transform, deathRange))
+            {
+                HandlePlayerCaught();
+            }
+            else if (!fieldOfView.IsTarget)
+            {
+                StopChasingPlayer();
+            }
+
+            lastKnownPosition = player.transform.position;
+        }
+    }
+
+    private bool IsInRange(Transform target, float range)
+    {
+        return Vector2.Distance(transform.position, target.position) <= range;
     }
 
     private void HandlePlayerCaught()
@@ -95,8 +134,10 @@ public class SimpleEnemyVisionAI : MonoBehaviour
         Debug.Log("Player LOST!");
     }
 
-    private bool IsInRange(Transform target, float range)
+    private void StopChasingPlayer()
     {
-        return Vector2.Distance(transform.position, target.position) <= range;
+        currentTarget = null;
+        agent.speed = normalSpeed;
+        agent.SetDestination(lastKnownPosition);
     }
 }
