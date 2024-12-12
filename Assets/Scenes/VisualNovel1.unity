@@ -355,7 +355,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4060086271
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -705,7 +705,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3597773722297596907, guid: 5914f1acf6654c647bd24d0273eb6baa, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7454471326248996706, guid: 5914f1acf6654c647bd24d0273eb6baa, type: 3}
       propertyPath: m_Name
