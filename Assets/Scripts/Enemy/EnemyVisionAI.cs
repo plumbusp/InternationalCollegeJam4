@@ -32,8 +32,6 @@ public class EnemyVisionAI : MonoBehaviour
     private bool isWaiting = false;
     private Vector3 lastKnownPosition;
 
-    private Vector2 _distance;
-
     private void Start()
     {
         InitializeAgent();
