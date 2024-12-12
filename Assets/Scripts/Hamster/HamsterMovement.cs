@@ -35,7 +35,7 @@ public class HamsterMovement : MonoBehaviour, ISoundMaker
 
 
 	[Header("Movement")]
-	[SerializeField] private float moveSpeed = 5f;
+	[SerializeField] private float moveSpeed;
 
 	[Header ("Noise")]
 	[SerializeField] private bool _usesNoise = false;
@@ -95,19 +95,18 @@ public class HamsterMovement : MonoBehaviour, ISoundMaker
 	{
 		// Movement
 		//rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
-		rb.MovePosition(rb.position + movement.normalized * moveSpeed * Time.fixedDeltaTime);
+		rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
         if (_usesNoise)
 			HandleNoiseMaking();
 	}
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
 		if (!_usesNoise)
 			return;
 
-		if(collision.tag == "Carpet")
+		if (collision.tag == "Carpet")
 			inCarpetZone = true;
-
 	}
     private void OnTriggerExit2D(Collider2D collision)
     {
