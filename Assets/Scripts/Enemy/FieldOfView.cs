@@ -83,6 +83,8 @@ public class FieldOfView : MonoBehaviour {
             vertexIndex++;
 
             angle -= angleIncrease;
+
+            mesh.RecalculateBounds();
         }
 
         mesh.vertices = vertices;
