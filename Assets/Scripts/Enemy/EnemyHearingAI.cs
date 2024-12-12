@@ -67,7 +67,6 @@ public class EnemyHearingAI : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(_currentSoundPriority);
         SmoothRotate2D();
 
         if (_waitingOnPlace || _Investigating)
@@ -80,6 +79,7 @@ public class EnemyHearingAI : MonoBehaviour
                     if(collider.tag == "Player")
                     {
                         Debug.Log("Player LOST!!!");
+                        ScreensLogic.Instance.ShowDeadScreen();
                     }
                 }
             }

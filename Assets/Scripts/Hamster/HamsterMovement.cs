@@ -35,7 +35,7 @@ public class HamsterMovement : MonoBehaviour, ISoundMaker
 
 
 	[Header("Movement")]
-	[SerializeField] private float moveSpeed = 5f;
+	[SerializeField] private float moveSpeed;
 
 	[Header ("Noise")]
 	[SerializeField] private bool _usesNoise = false;
@@ -95,7 +95,7 @@ public class HamsterMovement : MonoBehaviour, ISoundMaker
 	{
 		// Movement
 		//rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
-		rb.MovePosition(rb.position + movement.normalized * moveSpeed * Time.fixedDeltaTime);
+		rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
         if (_usesNoise)
 			HandleNoiseMaking();
 	}
