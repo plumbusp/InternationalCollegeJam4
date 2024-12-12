@@ -96,9 +96,9 @@ GameObject:
   - component: {fileID: 2168824270948044050}
   - component: {fileID: 129869776637132095}
   - component: {fileID: 7880990418242532961}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Hamster
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

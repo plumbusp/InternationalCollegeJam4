@@ -5,57 +5,139 @@ using UnityEngine.AI;
 
 public class SimpleEnemyVisionAI : MonoBehaviour
 {
-    Vector3 startPos;
-    float startRotationZ;
+    [Header("Settings")]
+    [SerializeField] private float chaseSpeed = 5f;
+    [SerializeField] private float normalSpeed = 3f;
+    [SerializeField] private float deathRange = 1.5f;
+    [SerializeField] private float patrolStopDistance = 1f;
+    [SerializeField] private float smoothRotationSpeed = 5f;
 
-    float smooothRotationTime = 3f;
+    [Header("References")]
+    [SerializeField] private FieldOfView fieldOfView;
+    [SerializeField] private NavMeshAgent agent;
+    [SerializeField] private HamsterMovement player;
+    [SerializeField] private List<Transform> waypoints;
 
-    [SerializeField] FieldOfView fieldOfView;
-    [SerializeField] NavMeshAgent agent;
-    [SerializeField] Transform target;
-    [SerializeField] float stoppingDistance = 1f;
-    [SerializeField] float agentSpeed;
+    private Vector3 _initialPosition;
+
+
+    private Queue<Transform> waypointQueue;
+    private Transform currentTarget;
+
+    private bool isPlayerDead = false;
+    private bool isWaiting = false;
+    private Vector3 lastKnownPosition;
 
     private void Start()
     {
-        agent.updateRotation = false; 
-        agent.updateUpAxis = false;
+        InitializeAgent();
+        InitializeWaypoints();
+        SubscribeToEvents();
 
-        startPos = transform.position;
-        startRotationZ = transform.rotation.z;
-        agent.speed = agentSpeed;
+        _initialPosition = transform.position;
     }
 
     private void Update()
     {
-        fieldOfView.SetOrigin(transform.position);
-        fieldOfView.SetDirection(transform.forward);
+        UpdateFieldOfView();
+        if (isPlayerDead || isWaiting) return;
 
-        Destination();
-
-        if (agent.remainingDistance <= .1f)
+        if (currentTarget != null)
         {
-            float newZRotation = Mathf.LerpAngle(transform.eulerAngles.z, startRotationZ, Time.deltaTime * smooothRotationTime);
-            transform.rotation = Quaternion.Euler(0, 0, newZRotation);
+            ProcessTargetBehavior();
+        }
+        else if (_initialPosition.magnitude <= patrolStopDistance)
+        {
+            agent.SetDestination(_initialPosition);
         }
     }
 
-    private void Destination()
+    #region Initialization
+    private void InitializeAgent()
     {
-        var destination = Vector3.zero;
-
-        if (fieldOfView.IsTarget)
-        {
-            destination = target.position;
-            agent.stoppingDistance = stoppingDistance;
-        }
-        else
-        {
-            destination = startPos;
-            agent.stoppingDistance = 0;
-        }
-
-        agent.SetDestination(destination);
+        agent.updateRotation = false;
+        agent.updateUpAxis = false;
+        agent.speed = normalSpeed;
     }
 
+    private void InitializeWaypoints()
+    {
+        waypointQueue = new Queue<Transform>();
+        foreach (var waypoint in waypoints)
+        {
+            if (waypoint != null)
+            {
+                waypointQueue.Enqueue(waypoint);
+            }
+            else
+            {
+                Debug.LogWarning("Waypoint is null! Skipping...");
+            }
+        }
+    }
+
+    private void SubscribeToEvents()
+    {
+        fieldOfView.OnPlayerDetected += HandlePlayerDetection;
+    }
+    #endregion
+
+    #region Field of View
+    private void UpdateFieldOfView()
+    {
+        fieldOfView.SetOrigin(transform.position);
+        fieldOfView.SetDirection(-transform.up);
+    }
+    #endregion
+
+    private void HandlePlayerDetection()
+    {
+        if (player.InSafeSpot || isPlayerDead) return;
+
+        SetTarget(player.transform, chaseSpeed);
+    }
+
+    private void SetTarget(Transform target, float speed)
+    {
+        currentTarget = target;
+        agent.speed = speed;
+    }
+
+    private void ProcessTargetBehavior()
+    {
+        agent.SetDestination(currentTarget.position);
+
+        if (currentTarget == player.transform)
+        {
+            if (IsInRange(player.transform, deathRange))
+            {
+                HandlePlayerCaught();
+            }
+            else if (!fieldOfView.IsTarget)
+            {
+                StopChasingPlayer();
+            }
+
+            lastKnownPosition = player.transform.position;
+        }
+    }
+
+    private bool IsInRange(Transform target, float range)
+    {
+        return Vector2.Distance(transform.position, target.position) <= range;
+    }
+
+    private void HandlePlayerCaught()
+    {
+        isPlayerDead = true;
+        agent.isStopped = true;
+        Debug.Log("Player LOST!");
+    }
+
+    private void StopChasingPlayer()
+    {
+        currentTarget = null;
+        agent.speed = normalSpeed;
+        agent.SetDestination(lastKnownPosition);
+    }
 }
