@@ -65,7 +65,14 @@ public class HamsterMovement : MonoBehaviour, ISoundMaker
 	{
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
-		_normalColor = _SpriteRenderers[0].color;
+		if(_SpriteRenderers.Count > 0)
+        {
+			_normalColor = _SpriteRenderers[0].color;
+		}
+        else
+        {
+			Debug.Log("I guess we don't use noise");
+        }
 	}
 
 	void Update()

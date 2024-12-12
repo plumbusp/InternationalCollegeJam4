@@ -7,6 +7,9 @@ using UnityEngine.UI;
 
 public class VisualNovel : MonoBehaviour
 {
+    [Header("References")]
+    [SerializeField] private SceneFader _sceneFader;
+
     [Header("Settings")]
     [SerializeField] private float _timeUntilNextPicture;
     private WaitForSeconds _waitUntilNextPicture;
@@ -36,6 +39,7 @@ public class VisualNovel : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Debug.Log("Skip");
+            _sceneFader.TransferToNextScene();
         }
     }
 
@@ -47,6 +51,7 @@ public class VisualNovel : MonoBehaviour
             if (_imagesQueue.Count == 0)
             {
                 Debug.Log("Visual novel is done!");
+                _sceneFader.TransferToNextScene();
                 break;
             }
 
