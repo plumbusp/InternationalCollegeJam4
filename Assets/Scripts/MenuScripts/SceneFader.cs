@@ -1,10 +1,11 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class SceneFader : MonoBehaviour
 {
     [SerializeField] private Animator _animator;
-
+    public event Action IsAboutToFadeOut;
     public void FadeIn()
     {
         _animator.SetTrigger("FadeIn");
