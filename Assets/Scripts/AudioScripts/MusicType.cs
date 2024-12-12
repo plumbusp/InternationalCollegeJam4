@@ -6,5 +6,6 @@ public enum MusicType
 {
     HappyMusic,
     SadMusic,
-    GameplayMusic
+    GameplayMusic,
+    MainMenu
 }

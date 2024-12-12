@@ -7,17 +7,14 @@ public class TestScript : MonoBehaviour
 {
     private void Start()
     {
-        AudioManager.instance.PlayAudio(MusicType.HappyMusic);
+        AudioManager.instance.PlayAudio(MusicType.MainMenu);
     }
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.W))
+        if (Input.anyKey)
         {
             AudioManager.instance.PlayAudio(SFXType.ClickSound);
         }
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            AudioManager.instance.PlayAudio(SFXType.ShootSound);
-        }
+
     }
 }

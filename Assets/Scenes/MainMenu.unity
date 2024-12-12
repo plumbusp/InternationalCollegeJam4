@@ -218,7 +218,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1391874871}
-  - {fileID: 1766534511}
+  - {fileID: 4749387571688631327}
   - {fileID: 1478923530}
   - {fileID: 2006179257}
   m_Father: {fileID: 0}
@@ -2330,21 +2330,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1766534510}
+      - m_Target: {fileID: 4749387571688631331}
         m_TargetAssemblyTypeName: SceneFader, Assembly-CSharp
         m_MethodName: FadeIn
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: TestScene
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1766534510}
-        m_TargetAssemblyTypeName: SceneFader, Assembly-CSharp
-        m_MethodName: TransferToNextScene
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3012,22 +3000,6 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &1766534510 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8528090738556657633, guid: 5914f1acf6654c647bd24d0273eb6baa, type: 3}
-  m_PrefabInstance: {fileID: 4749387571688631326}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca0df126332dab84db7396e40140eb39, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!224 &1766534511 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 8484730588081718321, guid: 5914f1acf6654c647bd24d0273eb6baa, type: 3}
-  m_PrefabInstance: {fileID: 4749387571688631326}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1854721776
 GameObject:
   m_ObjectHideFlags: 0
@@ -3837,6 +3809,22 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5914f1acf6654c647bd24d0273eb6baa, type: 3}
+--- !u!224 &4749387571688631327 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7121403728042413416, guid: 5914f1acf6654c647bd24d0273eb6baa, type: 3}
+  m_PrefabInstance: {fileID: 4749387571688631326}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4749387571688631331 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7480358637687319229, guid: 5914f1acf6654c647bd24d0273eb6baa, type: 3}
+  m_PrefabInstance: {fileID: 4749387571688631326}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca0df126332dab84db7396e40140eb39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &7451695322551099604
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3907,15 +3895,23 @@ PrefabInstance:
       objectReference: {fileID: 1284719533}
     - target: {fileID: 8471589031950603509, guid: 02b4f43dedb06014c97c4c6e4b6697e1, type: 3}
       propertyPath: musicObjects.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8471589031950603509, guid: 02b4f43dedb06014c97c4c6e4b6697e1, type: 3}
       propertyPath: musicObjects.Array.data[1].<clip>k__BackingField
       value: 
       objectReference: {fileID: 8300000, guid: 9ee00e40d8f002e48ab5144ac65d0d17, type: 3}
     - target: {fileID: 8471589031950603509, guid: 02b4f43dedb06014c97c4c6e4b6697e1, type: 3}
+      propertyPath: musicObjects.Array.data[2].<clip>k__BackingField
+      value: 
+      objectReference: {fileID: 8300000, guid: 23b9f143175ca3547a146a72ea8490cd, type: 3}
+    - target: {fileID: 8471589031950603509, guid: 02b4f43dedb06014c97c4c6e4b6697e1, type: 3}
       propertyPath: musicObjects.Array.data[1].<musicType>k__BackingField
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8471589031950603509, guid: 02b4f43dedb06014c97c4c6e4b6697e1, type: 3}
+      propertyPath: musicObjects.Array.data[2].<musicType>k__BackingField
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
