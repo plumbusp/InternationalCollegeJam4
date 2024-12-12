@@ -20,6 +20,7 @@ public class HamsterMovement : MonoBehaviour, ISoundMaker
 		}
         set
         {
+			Debug.Log("In safe spot");
 			if (value == true)
 				foreach (var renderer in _SpriteRenderers)
 					renderer.color = _shadowColor;

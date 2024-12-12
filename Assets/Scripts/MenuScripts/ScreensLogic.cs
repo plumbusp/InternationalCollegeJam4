@@ -7,7 +7,7 @@ public class ScreensLogic : MonoBehaviour
 {
     public static ScreensLogic Instance { get; private set; }
 
-    [SerializeField] private GameObject deadScreenUI;
+    [SerializeField] private GameObject _deadScreen;
     [SerializeField] private GameObject _pauseMenu;
 
     private void Awake()
@@ -15,14 +15,14 @@ public class ScreensLogic : MonoBehaviour
         Time.timeScale = 1;
         Instance = this;
         //Hide all panels
-        deadScreenUI.SetActive(false);
+        _deadScreen.SetActive(false);
         _pauseMenu.SetActive(false);
     }
 
     public void ShowDeadScreen()
     {
-        Time.timeScale = 0;
-        deadScreenUI.SetActive(true);
+        _deadScreen.SetActive(true);
+        PauseGame();
     }
 
     private void Update()
@@ -39,7 +39,6 @@ public class ScreensLogic : MonoBehaviour
             }
         }
     }
-
     public void ClosePauseMenu()
     {
         _pauseMenu.SetActive(false);

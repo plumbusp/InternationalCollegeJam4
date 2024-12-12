@@ -473,7 +473,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ce3cf711f6af034597c3bf012aefefb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deadScreenUI: {fileID: 6488209323850476292}
+  _deadScreen: {fileID: 6488209323850476292}
   _pauseMenu: {fileID: 1660845218653533925}
 --- !u!223 &1603681098660558730
 Canvas:

@@ -28,6 +28,7 @@ public class SimpleEnemyVisionAI : MonoBehaviour
     private bool isPlayerDead = false;
     private bool isWaiting = false;
 
+    [SerializeField] private Transform _rotationTarget;
     private Vector3 _initialPosition;
     private float _initialZRotation;
     private bool _onInitialRotation;
@@ -66,7 +67,7 @@ public class SimpleEnemyVisionAI : MonoBehaviour
         }
         else if (!_onInitialRotation)
         {
-            SmoothRotateTowardsInitialPosition();
+            RotateAgentTowardsTarget(_rotationTarget);
         }
         else
         {
@@ -140,6 +141,7 @@ public class SimpleEnemyVisionAI : MonoBehaviour
     {
         isPlayerDead = true;
         agent.isStopped = true;
+        ScreensLogic.Instance.ShowDeadScreen();
         Debug.Log("Player LOST!");
     }
 
@@ -168,14 +170,24 @@ public class SimpleEnemyVisionAI : MonoBehaviour
         }
     }
 
-    private void SmoothRotateTowardsInitialPosition()
+    private void RotateAgentTowardsTarget(Transform target)
     {
-        if (Mathf.DeltaAngle(transform.eulerAngles.z,_initialZRotation) <= 2f)
-        {
-            _onInitialRotation = true;
-            return;
-        }
-        float smoothedAngle = Mathf.LerpAngle(transform.eulerAngles.z, _initialZRotation, Time.deltaTime * smoothRotationSpeed);
-        transform.rotation = Quaternion.Euler(0, 0, smoothedAngle);
+        if (target == null) return;
+
+        // Calculate the direction towards the target
+        Vector3 direction = (target.position - transform.position).normalized;
+
+        // Ignore vertical differences if needed
+        direction.z = 0;
+
+        // Calculate the desired rotation
+        Quaternion targetRotation = Quaternion.LookRotation(Vector3.forward, direction);
+
+        // Smoothly interpolate rotation (optional)
+        transform.rotation = Quaternion.RotateTowards(
+            transform.rotation,
+            targetRotation,
+            Time.deltaTime * smoothRotationSpeed * 100
+        );
     }
 }

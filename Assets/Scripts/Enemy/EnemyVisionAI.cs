@@ -156,6 +156,7 @@ public class EnemyVisionAI : MonoBehaviour
     {
         isPlayerDead = true;
         agent.isStopped = true;
+        ScreensLogic.Instance.ShowDeadScreen();
         Debug.Log("Player LOST!");
     }
 
