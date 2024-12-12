@@ -5,6 +5,7 @@ using UnityEngine.AI;
 
 public class SimpleEnemyVisionAI : MonoBehaviour
 {
+
     [Header("Settings")]
     [SerializeField] private float chaseSpeed = 5f;
     [SerializeField] private float normalSpeed = 3f;
@@ -16,85 +17,84 @@ public class SimpleEnemyVisionAI : MonoBehaviour
     [SerializeField] private FieldOfView fieldOfView;
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private HamsterMovement player;
-    [SerializeField] private List<Transform> waypoints;
 
-    private Vector3 _initialPosition;
+    [Header("Mouse Settings")]
+    [SerializeField] private Mouse mouse;
+    [SerializeField] private float mouseEatingTime = 3f;
 
-
-    private Queue<Transform> waypointQueue;
+    private WaitForSeconds mouseEatingDelay;
     private Transform currentTarget;
 
     private bool isPlayerDead = false;
     private bool isWaiting = false;
-    private Vector3 lastKnownPosition;
+
+    private Vector3 _initialPosition;
+    private float _initialZRotation;
+    private bool _onInitialRotation;
 
     private void Start()
     {
-        InitializeAgent();
-        InitializeWaypoints();
-        SubscribeToEvents();
+        agent.updateRotation = false;
+        agent.updateUpAxis = false;
+        agent.speed = normalSpeed;
+
+
+        fieldOfView.OnPlayerDetected += HandlePlayerDetection;
+        fieldOfView.OnMouseDetected += HandleMouseDetection;
+
+        mouseEatingDelay = new WaitForSeconds(mouseEatingTime);
 
         _initialPosition = transform.position;
+        _initialZRotation = transform.eulerAngles.z;
     }
 
     private void Update()
     {
         UpdateFieldOfView();
         if (isPlayerDead || isWaiting) return;
+        SmoothRotateTowardsMovement();
 
         if (currentTarget != null)
         {
+            SmoothRotateTowardsMovement();
             ProcessTargetBehavior();
         }
-        else if (_initialPosition.magnitude <= patrolStopDistance)
+        else if (Vector2.Distance(transform.position, _initialPosition) > patrolStopDistance)
         {
+            SmoothRotateTowardsMovement();
             agent.SetDestination(_initialPosition);
         }
-    }
-
-    #region Initialization
-    private void InitializeAgent()
-    {
-        agent.updateRotation = false;
-        agent.updateUpAxis = false;
-        agent.speed = normalSpeed;
-    }
-
-    private void InitializeWaypoints()
-    {
-        waypointQueue = new Queue<Transform>();
-        foreach (var waypoint in waypoints)
+        else if (!_onInitialRotation)
         {
-            if (waypoint != null)
-            {
-                waypointQueue.Enqueue(waypoint);
-            }
-            else
-            {
-                Debug.LogWarning("Waypoint is null! Skipping...");
-            }
+            SmoothRotateTowardsInitialPosition();
+        }
+        else
+        {
+            Debug.Log("Just chil bro");
         }
     }
 
-    private void SubscribeToEvents()
-    {
-        fieldOfView.OnPlayerDetected += HandlePlayerDetection;
-    }
-    #endregion
 
     #region Field of View
     private void UpdateFieldOfView()
     {
         fieldOfView.SetOrigin(transform.position);
-        fieldOfView.SetDirection(-transform.up);
+        fieldOfView.SetDirection(transform.right);
     }
     #endregion
 
+    #region Target Handling
     private void HandlePlayerDetection()
     {
         if (player.InSafeSpot || isPlayerDead) return;
 
         SetTarget(player.transform, chaseSpeed);
+    }
+
+    private void HandleMouseDetection()
+    {
+        player.InSafeSpot = true;
+        SetTarget(mouse.transform, chaseSpeed);
     }
 
     private void SetTarget(Transform target, float speed)
@@ -115,13 +115,22 @@ public class SimpleEnemyVisionAI : MonoBehaviour
             }
             else if (!fieldOfView.IsTarget)
             {
-                StopChasingPlayer();
+                currentTarget = null;
+                return;
             }
-
-            lastKnownPosition = player.transform.position;
+        }
+        else if (currentTarget == mouse.transform)
+        {
+            Debug.Log(IsInRange(mouse.transform, deathRange) + "   " + Vector2.Distance(transform.position, currentTarget.position));
+            if (IsInRange(mouse.transform, deathRange))
+            {
+                StartCoroutine(HandleMouseInteraction());
+            }
         }
     }
+    #endregion
 
+    #region Target Interaction
     private bool IsInRange(Transform target, float range)
     {
         return Vector2.Distance(transform.position, target.position) <= range;
@@ -134,10 +143,39 @@ public class SimpleEnemyVisionAI : MonoBehaviour
         Debug.Log("Player LOST!");
     }
 
-    private void StopChasingPlayer()
+    private IEnumerator HandleMouseInteraction()
     {
+        isWaiting = true;
         currentTarget = null;
-        agent.speed = normalSpeed;
-        agent.SetDestination(lastKnownPosition);
+
+        yield return mouseEatingDelay;
+
+        isWaiting = false;
+        player.InSafeSpot = false;
+        mouse.Eat();
+    }
+    #endregion
+
+
+    private void SmoothRotateTowardsMovement()
+    {
+        if (agent.velocity.sqrMagnitude > 0.01f)
+        {
+            Vector2 direction = agent.velocity.normalized;
+            float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            float smoothedAngle = Mathf.LerpAngle(transform.eulerAngles.z, targetAngle, Time.deltaTime * smoothRotationSpeed);
+            transform.rotation = Quaternion.Euler(0, 0, smoothedAngle);
+        }
+    }
+
+    private void SmoothRotateTowardsInitialPosition()
+    {
+        if (Mathf.DeltaAngle(transform.eulerAngles.z,_initialZRotation) <= 2f)
+        {
+            _onInitialRotation = true;
+            return;
+        }
+        float smoothedAngle = Mathf.LerpAngle(transform.eulerAngles.z, _initialZRotation, Time.deltaTime * smoothRotationSpeed);
+        transform.rotation = Quaternion.Euler(0, 0, smoothedAngle);
     }
 }
