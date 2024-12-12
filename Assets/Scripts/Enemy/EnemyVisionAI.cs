@@ -132,6 +132,8 @@ public class EnemyVisionAI : MonoBehaviour
             {
                 StopChasingPlayer();
             }
+
+            lastKnownPosition = player.transform.position;
         }
         else if (currentTarget == mouse.transform)
         {

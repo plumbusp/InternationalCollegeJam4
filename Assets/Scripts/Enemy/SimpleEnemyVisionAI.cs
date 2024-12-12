@@ -5,98 +5,79 @@ using UnityEngine.AI;
 
 public class SimpleEnemyVisionAI : MonoBehaviour
 {
-    private Vector3 startPos;
-    private Quaternion startRotation;
-
-    private float smooothRotationTime = 3f;
-
     [Header("Settings")]
-
     [SerializeField] private float chaseSpeed = 5f;
     [SerializeField] private float normalSpeed = 3f;
     [SerializeField] private float deathRange = 1.5f;
+    [SerializeField] private float patrolStopDistance = 1f;
+    [SerializeField] private float smoothRotationSpeed = 5f;
 
     [Header("References")]
-
     [SerializeField] private FieldOfView fieldOfView;
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private HamsterMovement player;
-    private Transform currentTarget;
+    private bool followingTarget = false;
+    private bool checkingLastSeen;
 
+    private Vector3 intialPosition;
+    private Vector3 _lastSeen;
 
-    private Vector3 lastKnownPosition;
-    private bool isPlayerDead = false;
 
     private void Start()
     {
-        startPos = transform.position;
-        startRotation = transform.rotation;
-
-        fieldOfView.OnPlayerDetected += HandlePlayerDetection;
+        fieldOfView.OnPlayerDetected += HandlePlyerDetection;
     }
 
     private void Update()
     {
-        fieldOfView.SetOrigin(transform.position);
-        fieldOfView.SetDirection(transform.forward);
+        SmoothRotateTowardsMovement();
 
-        Destination();
-
-        if (agent.remainingDistance <= .1f)
-            transform.rotation = Quaternion.Slerp(transform.rotation, startRotation, Time.deltaTime * smooothRotationTime);
-    }
-
-    private void Destination()
-    {
-        var destination = Vector3.zero;
-
-        if(currentTarget != null)
+        if (!followingTarget)
         {
-            if (fieldOfView.IsTarget)
+            return;
+        }
+
+        if (followingTarget && fieldOfView.IsTarget)
+        {
+            if (Vector2.Distance(transform.position, player.transform.position) <= deathRange)
             {
-                if (IsInRange(player.transform, deathRange))
-                {
-                    HandlePlayerCaught();
-                }
-                else if (!fieldOfView.IsTarget)
-                {
-                    StopChasingPlayer();
-                }
+                agent.isStopped = true;
+                Debug.Log("Player is dead");
+            }
+            agent.SetDestination(player.transform.position);
+            _lastSeen = player.transform.position;
+        }
+        else if(followingTarget && !fieldOfView.IsTarget)
+        {
+            followingTarget = false;
+            checkingLastSeen = true;
+            agent.SetDestination(_lastSeen);
+            agent.speed = normalSpeed;
+        }
+        else if (checkingLastSeen)
+        {
+            if(agent.remainingDistance <= patrolStopDistance)
+            {
+                checkingLastSeen = false;
+                agent.SetDestination(intialPosition);
             }
         }
-        else
-        {
-            destination = startPos;
-            agent.stoppingDistance = 0;
-        }
-
-        agent.SetDestination(destination);
     }
-
-    private void HandlePlayerDetection()
+    private void HandlePlyerDetection()
     {
-        if (isPlayerDead) return;
-
-        currentTarget = player.transform;
-        agent.SetDestination(currentTarget.position);
+        followingTarget = true;
         agent.speed = chaseSpeed;
     }
-    private void StopChasingPlayer()
+
+    private void SmoothRotateTowardsMovement()
     {
-        currentTarget = null;
-        agent.speed = normalSpeed;
-        agent.SetDestination(lastKnownPosition);
+        if (agent.velocity.sqrMagnitude > 0.01f)
+        {
+            Vector2 direction = agent.velocity.normalized;
+            float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            float smoothedAngle = Mathf.LerpAngle(transform.eulerAngles.z, targetAngle, Time.deltaTime * smoothRotationSpeed);
+            transform.rotation = Quaternion.Euler(0, 0, smoothedAngle);
+        }
     }
 
-    private void HandlePlayerCaught()
-    {
-        isPlayerDead = true;
-        agent.isStopped = true;
-        Debug.Log("Player LOST!");
-    }
-
-    private bool IsInRange(Transform target, float range)
-    {
-        return Vector2.Distance(transform.position, target.position) <= range;
-    }
 }
