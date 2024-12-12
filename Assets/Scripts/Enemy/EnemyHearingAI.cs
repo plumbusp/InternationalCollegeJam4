@@ -78,7 +78,6 @@ public class EnemyHearingAI : MonoBehaviour
                 {
                     if(collider.tag == "Player")
                     {
-                        Debug.Log("Player LOST!!!");
                         ScreensLogic.Instance.ShowDeadScreen();
                     }
                 }

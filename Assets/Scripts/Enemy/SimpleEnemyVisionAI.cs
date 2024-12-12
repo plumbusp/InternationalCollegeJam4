@@ -57,25 +57,20 @@ public class SimpleEnemyVisionAI : MonoBehaviour
 
         if (currentTarget != null)
         {
-            Debug.Log(currentTarget.name);
             SmoothRotateTowardsMovement();
             ProcessTargetBehavior();
-            Debug.Log("1Just chil bro");
         }
         else if (Vector2.Distance(transform.position, _initialPosition) > patrolStopDistance)
         {
             SmoothRotateTowardsMovement();
             agent.SetDestination(_initialPosition);
-            Debug.Log("2Just chil bro");
         }
         else if (!_onInitialRotation)
         {
             RotateAgentTowardsTarget(_rotationTarget);
-            Debug.Log("3Just chil bro");
         }
         else
         {
-            Debug.Log("4Just chil bro");
         }
     }
 

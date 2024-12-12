@@ -618,6 +618,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 913175293336214668, guid: e3266fefecab009469091971d6608d67, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1787076567018307593, guid: e3266fefecab009469091971d6608d67, type: 3}
       propertyPath: m_Name
       value: Box
@@ -1422,6 +1426,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 526428353}
     m_Modifications:
+    - target: {fileID: 2259804024158258168, guid: 7bc2d06156a2d0d45bee21b49d8b9f96, type: 3}
+      propertyPath: m_Size.x
+      value: 5.179596
+      objectReference: {fileID: 0}
+    - target: {fileID: 2259804024158258168, guid: 7bc2d06156a2d0d45bee21b49d8b9f96, type: 3}
+      propertyPath: m_Offset.x
+      value: 0.01679182
+      objectReference: {fileID: 0}
     - target: {fileID: 2414693338448902867, guid: 7bc2d06156a2d0d45bee21b49d8b9f96, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.75
@@ -1633,6 +1645,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 526428353}
     m_Modifications:
+    - target: {fileID: 2177107154707528273, guid: 8bf9947ce45edef469f2fabb58e076ea, type: 3}
+      propertyPath: m_Size.x
+      value: 4.7712193
+      objectReference: {fileID: 0}
+    - target: {fileID: 2177107154707528273, guid: 8bf9947ce45edef469f2fabb58e076ea, type: 3}
+      propertyPath: m_Size.y
+      value: 0.3800001
+      objectReference: {fileID: 0}
+    - target: {fileID: 2177107154707528273, guid: 8bf9947ce45edef469f2fabb58e076ea, type: 3}
+      propertyPath: m_Offset.x
+      value: 0.12561
+      objectReference: {fileID: 0}
     - target: {fileID: 3685416500021899071, guid: 8bf9947ce45edef469f2fabb58e076ea, type: 3}
       propertyPath: m_Name
       value: Fence single

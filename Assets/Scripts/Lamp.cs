@@ -36,18 +36,21 @@ public class Lamp : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.tag == "Player")
+        {
             hamster.InSafeSpot = true;
-    }
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        if (collision.tag == "Player" && !hamster.InSafeSpot)
-            hamster.InSafeSpot = true;
+            Debug.Log("Player in safe spot");
+        }
+
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.tag == "Player")
+        {
+            Debug.Log("Player NOT  safe spot");
             hamster.InSafeSpot = false;
+        }
+
     }
 
     private IEnumerator LightFlickering()
