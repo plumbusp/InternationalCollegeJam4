@@ -3,10 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class VisualNovel : MonoBehaviour
 {
+    [SerializeField] private bool _allowedToSkip = true;
+    [SerializeField] private bool _lastNovel = false;
+
     [Header("References")]
     [SerializeField] private SceneFader _sceneFader;
 
@@ -36,6 +40,9 @@ public class VisualNovel : MonoBehaviour
     }
     private void Update()
     {
+        if (!_allowedToSkip)
+            return;
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Debug.Log("Skip");
@@ -51,7 +58,14 @@ public class VisualNovel : MonoBehaviour
             if (_imagesQueue.Count == 0)
             {
                 Debug.Log("Visual novel is done!");
-                _sceneFader.FadeIn();
+                if (_lastNovel)
+                {
+                    SceneManager.LoadScene(0);
+                }
+                else
+                {
+                    _sceneFader.FadeIn();
+                }
                 break;
             }
 

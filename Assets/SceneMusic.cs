@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class TestScript : MonoBehaviour
+public class SceneMusic : MonoBehaviour
 {
+    [SerializeField] private MusicType _backgroundMusic;
     private void Start()
     {
-        AudioManager.instance.PlayAudio(MusicType.MainMenu);
-        Debug.Log("Playing");
+        AudioManager.instance.PlayAudio(_backgroundMusic);
     }
     void Update()
     {
