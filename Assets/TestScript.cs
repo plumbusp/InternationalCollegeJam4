@@ -8,6 +8,7 @@ public class TestScript : MonoBehaviour
     private void Start()
     {
         AudioManager.instance.PlayAudio(MusicType.MainMenu);
+        Debug.Log("Playing");
     }
     void Update()
     {

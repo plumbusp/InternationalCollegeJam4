@@ -5,10 +5,11 @@ using UnityEngine.UI;
 
 public class QuickRestart : MonoBehaviour
 {
+    [SerializeField] private SceneFader sceneFader;
     private Image buttonimage;
     private void Awake()
     {
-        GameObject.Find("SceneFader").GetComponent<SceneFader>().IsAboutToFadeOut += () => { gameObject.SetActive(false); };
+        sceneFader.IsAboutToFadeIn += () => { gameObject.SetActive(false); };
         buttonimage = GetComponent<Image>();
         StartCoroutine(DelayAppear());
     }
