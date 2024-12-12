@@ -66,8 +66,10 @@ public class Lamp : MonoBehaviour
         _turnedOn = lightOn;
         _light.SetActive(lightOn);
         _shadow.SetActive(!lightOn);
-        if (_triggerCollider != null)
-            _triggerCollider.enabled = !lightOn;
+        if (_triggerCollider == null)
+            return;
+
+        _triggerCollider.enabled = !lightOn;
 
         if (_turnedOn && Vector2.Distance(transform.position, hamster.transform.position) <= checkRadius)
         {

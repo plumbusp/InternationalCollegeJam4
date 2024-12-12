@@ -133,7 +133,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _enemyChaseSpeed: 20
   _enemyNormalSpeed: 3
-  _closeHearingRadius: 2.1
+  _closeHearingRadius: 1.78
   _timeOnInvestigation: 4
   agent: {fileID: 1980792370459474563}
   PatrolStopDistance: 1.2
