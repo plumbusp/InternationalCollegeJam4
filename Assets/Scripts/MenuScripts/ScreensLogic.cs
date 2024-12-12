@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ScreensLogic : MonoBehaviour
 {
@@ -26,7 +27,7 @@ public class ScreensLogic : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKey(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (_pauseMenu.activeSelf)
             {
@@ -43,6 +44,10 @@ public class ScreensLogic : MonoBehaviour
     {
         _pauseMenu.SetActive(false);
         UnpauseGame();
+    }
+    public void GoToMainMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
     }
 
     private void OpenPauseMenu()
