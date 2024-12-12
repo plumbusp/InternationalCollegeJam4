@@ -138,7 +138,9 @@ MonoBehaviour:
   fieldOfView: {fileID: 0}
   agent: {fileID: 8608583704221383402}
   player: {fileID: 0}
-  waypoints: []
+  mouse: {fileID: 0}
+  mouseEatingTime: 3
+  _rotationTarget: {fileID: 0}
 --- !u!195 &8608583704221383402
 NavMeshAgent:
   m_ObjectHideFlags: 0
