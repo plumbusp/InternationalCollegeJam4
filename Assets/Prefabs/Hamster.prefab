@@ -96,6 +96,7 @@ GameObject:
   - component: {fileID: 2168824270948044050}
   - component: {fileID: 129869776637132095}
   - component: {fileID: 7880990418242532961}
+  - component: {fileID: 1028999326447244808}
   m_Layer: 6
   m_Name: Hamster
   m_TagString: Player
@@ -203,6 +204,27 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 0.7, y: 0.7}
   m_Direction: 0
+--- !u!114 &1028999326447244808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7701890898335522720}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 455f96dad513ee44cb486e0d6f0d0a1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 5
+  _usesNoise: 0
+  _noiseSpriteRenderer: {fileID: 0}
+  _loudNoiseWave: {fileID: 0}
+  _quiteNoiseWave: {fileID: 0}
+  _SpriteRenderers:
+  - {fileID: 6509979944652174435}
+  - {fileID: 6877808359785443400}
+  _shadowColor: {r: 0.4811321, g: 0.4811321, b: 0.4811321, a: 1}
 --- !u!1 &8266276333644774382
 GameObject:
   m_ObjectHideFlags: 0

@@ -1691,14 +1691,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1583396617}
     - target: {fileID: 1205125542516342624, guid: 3174e254ebf465d438798548765c72c8, type: 3}
-      propertyPath: chaseSpeed
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 1205125542516342624, guid: 3174e254ebf465d438798548765c72c8, type: 3}
-      propertyPath: deathRange
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1205125542516342624, guid: 3174e254ebf465d438798548765c72c8, type: 3}
       propertyPath: fieldOfView
       value: 
       objectReference: {fileID: 1202055413}
