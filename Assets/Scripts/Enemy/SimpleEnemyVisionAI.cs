@@ -5,79 +5,57 @@ using UnityEngine.AI;
 
 public class SimpleEnemyVisionAI : MonoBehaviour
 {
-    [Header("Settings")]
-    [SerializeField] private float chaseSpeed = 5f;
-    [SerializeField] private float normalSpeed = 3f;
-    [SerializeField] private float deathRange = 1.5f;
-    [SerializeField] private float patrolStopDistance = 1f;
-    [SerializeField] private float smoothRotationSpeed = 5f;
+    Vector3 startPos;
+    float startRotationZ;
 
-    [Header("References")]
-    [SerializeField] private FieldOfView fieldOfView;
-    [SerializeField] private NavMeshAgent agent;
-    [SerializeField] private HamsterMovement player;
-    private bool followingTarget = false;
-    private bool checkingLastSeen;
+    float smooothRotationTime = 3f;
 
-    private Vector3 intialPosition;
-    private Vector3 _lastSeen;
-
+    [SerializeField] FieldOfView fieldOfView;
+    [SerializeField] NavMeshAgent agent;
+    [SerializeField] Transform target;
+    [SerializeField] float stoppingDistance = 1f;
+    [SerializeField] float agentSpeed;
 
     private void Start()
     {
-        fieldOfView.OnPlayerDetected += HandlePlyerDetection;
+        agent.updateRotation = false; 
+        agent.updateUpAxis = false;
+
+        startPos = transform.position;
+        startRotationZ = transform.rotation.z;
+        agent.speed = agentSpeed;
     }
 
     private void Update()
     {
-        SmoothRotateTowardsMovement();
+        fieldOfView.SetOrigin(transform.position);
+        fieldOfView.SetDirection(transform.forward);
 
-        if (!followingTarget)
-        {
-            return;
-        }
+        Destination();
 
-        if (followingTarget && fieldOfView.IsTarget)
+        if (agent.remainingDistance <= .1f)
         {
-            if (Vector2.Distance(transform.position, player.transform.position) <= deathRange)
-            {
-                agent.isStopped = true;
-                Debug.Log("Player is dead");
-            }
-            agent.SetDestination(player.transform.position);
-            _lastSeen = player.transform.position;
-        }
-        else if(followingTarget && !fieldOfView.IsTarget)
-        {
-            followingTarget = false;
-            checkingLastSeen = true;
-            agent.SetDestination(_lastSeen);
-            agent.speed = normalSpeed;
-        }
-        else if (checkingLastSeen)
-        {
-            if(agent.remainingDistance <= patrolStopDistance)
-            {
-                checkingLastSeen = false;
-                agent.SetDestination(intialPosition);
-            }
+            float newZRotation = Mathf.LerpAngle(transform.eulerAngles.z, startRotationZ, Time.deltaTime * smooothRotationTime);
+            transform.rotation = Quaternion.Euler(0, 0, newZRotation);
         }
     }
-    private void HandlePlyerDetection()
-    {
-        followingTarget = true;
-        agent.speed = chaseSpeed;
-    }
 
-    private void SmoothRotateTowardsMovement()
+    private void Destination()
     {
-        if (agent.velocity.sqrMagnitude > 0.01f)
+        var destination = Vector3.zero;
+
+        if (fieldOfView.IsTarget)
         {
-            Vector2 direction = agent.velocity.normalized;
-            float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            float smoothedAngle = Mathf.LerpAngle(transform.eulerAngles.z, targetAngle, Time.deltaTime * smoothRotationSpeed);
-            transform.rotation = Quaternion.Euler(0, 0, smoothedAngle);
+            destination = target.position;
+            agent.stoppingDistance = stoppingDistance;
         }
+        else
+        {
+            destination = startPos;
+            agent.stoppingDistance = 0;
+        }
+
+        agent.SetDestination(destination);
     }
 
 }
