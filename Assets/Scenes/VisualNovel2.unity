@@ -761,7 +761,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _allowedToSkip: 0
-  _lastNovel: 0
+  _lastNovel: 1
   _sceneFader: {fileID: 1243416622}
   _timeUntilNextPicture: 4
   _oneSlideCapasity: 1
