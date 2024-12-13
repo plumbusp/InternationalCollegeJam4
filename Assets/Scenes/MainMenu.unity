@@ -1276,7 +1276,7 @@ RectTransform:
   m_Father: {fileID: 1057002894}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 15, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -2599,7 +2599,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1478923530
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2691,7 +2691,7 @@ RectTransform:
   m_Father: {fileID: 86436858}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -3545,7 +3545,7 @@ RectTransform:
   m_Father: {fileID: 1854721777}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 15, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -3899,7 +3899,7 @@ RectTransform:
   m_Father: {fileID: 1034251624}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -4183,7 +4183,7 @@ PrefabInstance:
       objectReference: {fileID: 1284719533}
     - target: {fileID: 8471589031950603509, guid: 02b4f43dedb06014c97c4c6e4b6697e1, type: 3}
       propertyPath: musicObjects.Array.size
-      value: 3
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8471589031950603509, guid: 02b4f43dedb06014c97c4c6e4b6697e1, type: 3}
       propertyPath: musicObjects.Array.data[1].<clip>k__BackingField
@@ -4194,12 +4194,28 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8300000, guid: 23b9f143175ca3547a146a72ea8490cd, type: 3}
     - target: {fileID: 8471589031950603509, guid: 02b4f43dedb06014c97c4c6e4b6697e1, type: 3}
+      propertyPath: musicObjects.Array.data[3].<clip>k__BackingField
+      value: 
+      objectReference: {fileID: 8300000, guid: f5302561165d770449c59b04e7ed9eed, type: 3}
+    - target: {fileID: 8471589031950603509, guid: 02b4f43dedb06014c97c4c6e4b6697e1, type: 3}
+      propertyPath: musicObjects.Array.data[4].<clip>k__BackingField
+      value: 
+      objectReference: {fileID: 8300000, guid: 49775e247cffda44885f2b7b8545a488, type: 3}
+    - target: {fileID: 8471589031950603509, guid: 02b4f43dedb06014c97c4c6e4b6697e1, type: 3}
       propertyPath: musicObjects.Array.data[1].<musicType>k__BackingField
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8471589031950603509, guid: 02b4f43dedb06014c97c4c6e4b6697e1, type: 3}
       propertyPath: musicObjects.Array.data[2].<musicType>k__BackingField
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8471589031950603509, guid: 02b4f43dedb06014c97c4c6e4b6697e1, type: 3}
+      propertyPath: musicObjects.Array.data[3].<musicType>k__BackingField
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8471589031950603509, guid: 02b4f43dedb06014c97c4c6e4b6697e1, type: 3}
+      propertyPath: musicObjects.Array.data[4].<musicType>k__BackingField
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

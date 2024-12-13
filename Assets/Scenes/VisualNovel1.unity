@@ -243,51 +243,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &41173092
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 41173094}
-  - component: {fileID: 41173093}
-  m_Layer: 0
-  m_Name: GameSceneManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &41173093
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 41173092}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 808c106ba2c86e144a260d0c7d5c7c2e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _backgroundMusic: 2
---- !u!4 &41173094
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 41173092}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 270.00006, y: 152.15375, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &458700463
 GameObject:
   m_ObjectHideFlags: 0
@@ -348,14 +303,14 @@ MonoBehaviour:
       m_Calls: []
   m_text: Press Space To Skip
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f2de114bea24ffd499a231f0df6353c3, type: 2}
-  m_sharedMaterial: {fileID: 6808139541466423338, guid: f2de114bea24ffd499a231f0df6353c3, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f8f38a16e76437649b8d144017e5e287, type: 2}
+  m_sharedMaterial: {fileID: 6808139541466423338, guid: f8f38a16e76437649b8d144017e5e287, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4060086271
+    rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -705,7 +660,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3597773722297596907, guid: 5914f1acf6654c647bd24d0273eb6baa, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7454471326248996706, guid: 5914f1acf6654c647bd24d0273eb6baa, type: 3}
       propertyPath: m_Name
@@ -1678,7 +1633,6 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 41173094}
   - {fileID: 2086260801}
   - {fileID: 670570903}
   - {fileID: 907805395}
