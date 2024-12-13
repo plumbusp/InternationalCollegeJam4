@@ -56,9 +56,6 @@ MonoBehaviour:
     <clip>k__BackingField: {fileID: 8300000, guid: 4ad7b6c21d909d0489750f44b3537ff8, type: 3}
   _musicAudioSource: {fileID: 0}
   _SFXAudioSource: {fileID: 0}
-  _audioMixer: {fileID: 24100000, guid: 6cb59a960bc72204ba317ae66fd5baa3, type: 2}
-  _musicSlider: {fileID: 0}
-  _SFXSlider: {fileID: 0}
 --- !u!1 &2026606312612323172
 GameObject:
   m_ObjectHideFlags: 0

@@ -66,6 +66,7 @@ public class Lamp : MonoBehaviour
 
     private void SetLightState(bool lightOn)
     {
+        AudioManager.instance.PlayAudio(SFXType.LampOn);
         _turnedOn = lightOn;
         _light.SetActive(lightOn);
         _shadow.SetActive(!lightOn);

@@ -10,12 +10,4 @@ public class SceneMusic : MonoBehaviour
     {
         AudioManager.instance.PlayAudio(_backgroundMusic);
     }
-    void Update()
-    {
-        if (Input.anyKey)
-        {
-            AudioManager.instance.PlayAudio(SFXType.ClickSound);
-        }
-
-    }
 }

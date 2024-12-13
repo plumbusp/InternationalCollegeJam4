@@ -30,6 +30,7 @@ public class EnemyHearingAI : MonoBehaviour
     [SerializeField] private List<GameObject> _soundsMakers;
     private bool _Investigating = false;
     private bool _waitingOnPlace = false;
+    private bool _playerIsDead = false;
 
     private int _currentSoundPriority;
     private int _nonePriority = 0;
@@ -41,6 +42,8 @@ public class EnemyHearingAI : MonoBehaviour
     {
         agent.updateRotation = false;
         agent.updateUpAxis = false;
+
+        _playerIsDead = false;
 
         wait = new WaitForSeconds(_timeOnInvestigation);
 
@@ -69,6 +72,9 @@ public class EnemyHearingAI : MonoBehaviour
     {
         SmoothRotate2D();
 
+        if (_playerIsDead)
+            return;
+
         if (_waitingOnPlace || _Investigating)
         {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, _closeHearingRadius);
@@ -78,6 +84,8 @@ public class EnemyHearingAI : MonoBehaviour
                 {
                     if(collider.tag == "Player")
                     {
+                        AudioManager.instance.PlayAudio(SFXType.CatAngry);
+                        _playerIsDead = true;
                         ScreensLogic.Instance.ShowDeadScreen();
                     }
                 }

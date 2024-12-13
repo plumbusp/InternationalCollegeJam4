@@ -154,6 +154,7 @@ public class EnemyVisionAI : MonoBehaviour
 
     private void HandlePlayerCaught()
     {
+        AudioManager.instance.PlayAudio(SFXType.CatAngry);
         isPlayerDead = true;
         agent.isStopped = true;
         ScreensLogic.Instance.ShowDeadScreen();

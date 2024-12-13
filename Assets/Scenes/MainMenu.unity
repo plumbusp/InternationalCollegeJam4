@@ -4182,9 +4182,25 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1284719533}
     - target: {fileID: 8471589031950603509, guid: 02b4f43dedb06014c97c4c6e4b6697e1, type: 3}
+      propertyPath: SFXObjects.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8471589031950603509, guid: 02b4f43dedb06014c97c4c6e4b6697e1, type: 3}
       propertyPath: musicObjects.Array.size
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 8471589031950603509, guid: 02b4f43dedb06014c97c4c6e4b6697e1, type: 3}
+      propertyPath: SFXObjects.Array.data[2].<clip>k__BackingField
+      value: 
+      objectReference: {fileID: 8300000, guid: 19b5265f94c7554438eb98b2f9a19b50, type: 3}
+    - target: {fileID: 8471589031950603509, guid: 02b4f43dedb06014c97c4c6e4b6697e1, type: 3}
+      propertyPath: SFXObjects.Array.data[3].<clip>k__BackingField
+      value: 
+      objectReference: {fileID: 8300000, guid: c6f28992a8064cc4fa885230e8f2611a, type: 3}
+    - target: {fileID: 8471589031950603509, guid: 02b4f43dedb06014c97c4c6e4b6697e1, type: 3}
+      propertyPath: SFXObjects.Array.data[4].<clip>k__BackingField
+      value: 
+      objectReference: {fileID: 8300000, guid: ad64c7b562540ac4d813cff2d4d6c8d5, type: 3}
     - target: {fileID: 8471589031950603509, guid: 02b4f43dedb06014c97c4c6e4b6697e1, type: 3}
       propertyPath: musicObjects.Array.data[1].<clip>k__BackingField
       value: 
@@ -4201,6 +4217,18 @@ PrefabInstance:
       propertyPath: musicObjects.Array.data[4].<clip>k__BackingField
       value: 
       objectReference: {fileID: 8300000, guid: 49775e247cffda44885f2b7b8545a488, type: 3}
+    - target: {fileID: 8471589031950603509, guid: 02b4f43dedb06014c97c4c6e4b6697e1, type: 3}
+      propertyPath: SFXObjects.Array.data[2].<sfxType>k__BackingField
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8471589031950603509, guid: 02b4f43dedb06014c97c4c6e4b6697e1, type: 3}
+      propertyPath: SFXObjects.Array.data[3].<sfxType>k__BackingField
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8471589031950603509, guid: 02b4f43dedb06014c97c4c6e4b6697e1, type: 3}
+      propertyPath: SFXObjects.Array.data[4].<sfxType>k__BackingField
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 8471589031950603509, guid: 02b4f43dedb06014c97c4c6e4b6697e1, type: 3}
       propertyPath: musicObjects.Array.data[1].<musicType>k__BackingField
       value: 2

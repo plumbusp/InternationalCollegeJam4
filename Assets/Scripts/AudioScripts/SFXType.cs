@@ -5,5 +5,10 @@ using UnityEngine;
 public enum SFXType
 {
     ShootSound,
-    ClickSound
+    ClickSound,
+    CatAngry,
+    Push,
+    Mouse,
+    LampOn,
+    Toy
 }

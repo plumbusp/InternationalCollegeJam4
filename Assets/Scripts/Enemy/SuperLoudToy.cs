@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SuperLoudToy : Interactable, ISoundMaker
@@ -12,6 +10,7 @@ public class SuperLoudToy : Interactable, ISoundMaker
     override public void Interact()
     {
         base.Interact();
+        AudioManager.instance.PlayAudio(SFXType.Toy);
         OnSuperLoudSoundMade?.Invoke(transform.position);
         Debug.Log("BOOM on " + transform.position);
     }

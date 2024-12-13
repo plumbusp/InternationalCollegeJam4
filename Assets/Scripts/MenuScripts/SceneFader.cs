@@ -9,6 +9,7 @@ public class SceneFader : MonoBehaviour
 
     private void Awake()
     {
+        Time.timeScale = 1f;
         gameObject.SetActive(true);
         _animator.SetTrigger("FadeOut");
     }
