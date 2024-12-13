@@ -15,9 +15,6 @@ public class AudioManager : MonoBehaviour
 
     [SerializeField] private AudioSource _musicAudioSource;
     [SerializeField] private AudioSource _SFXAudioSource;
-    [SerializeField] private AudioMixer _audioMixer;
-    [SerializeField] private Slider _musicSlider;
-    [SerializeField] private Slider _SFXSlider;
 
     private VolumeController _volumeController;
 
@@ -25,7 +22,6 @@ public class AudioManager : MonoBehaviour
 
     private void Initialize()
     {
-        _volumeController = new VolumeController(_audioMixer, _musicSlider, _SFXSlider);
         _audioClips = new Dictionary<string, AudioClip>();
         foreach (var musicObject in musicObjects)
         {

@@ -5,21 +5,17 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
 
-public class VolumeController
+public class VolumeController:MonoBehaviour
 {
-    private AudioMixer _audioMixer;
-    private Slider _musicSlider;
-    private Slider _SFXSlider;
+    public AudioMixer _audioMixer;
+    public  Slider _musicSlider;
+    public Slider _SFXSlider;
 
     const string MIXER_MUSIC = "MusicVolume";    // Exposed param of Music volume (in AudioMixer)
     const string MIXER_SFX = "SFXVolume";        // Exposed param of SFX volume (in AudioMixer)
 
-    public VolumeController (AudioMixer audioMixer, Slider musicSlider, Slider SFXSlider)
+    private void Awake()
     {
-        _audioMixer = audioMixer;
-        _musicSlider = musicSlider;
-        _SFXSlider = SFXSlider;
-
         _musicSlider.onValueChanged.AddListener(ChangeMusicVolume);
         _SFXSlider.onValueChanged.AddListener(ChangeSFXVolume);
     }
