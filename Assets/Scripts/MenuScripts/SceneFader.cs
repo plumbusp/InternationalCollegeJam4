@@ -18,6 +18,16 @@ public class SceneFader : MonoBehaviour
         gameObject.SetActive(true);
         _animator.SetTrigger("FadeIn");
     }
+
+    public void FadeInMainMenu()
+    {
+        Debug.Log("Fade in main menu");
+        IsAboutToFadeIn?.Invoke();
+        gameObject.SetActive(true);
+        Time.timeScale = 1;
+        _animator.SetTrigger("FadeInMainMenu");
+    }
+
     public void Deactivate()
     {
         gameObject.SetActive(false);

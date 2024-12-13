@@ -71,7 +71,6 @@ public class VisualNovel : MonoBehaviour
 
             if (_currectFullness < _oneSlideCapasity)
             {
-                Debug.Log(_currectFullness);
                 nextImage = _imagesQueue.Dequeue();
                 nextImage.gameObject.SetActive(true);
                 _activatedImages.Add(nextImage);

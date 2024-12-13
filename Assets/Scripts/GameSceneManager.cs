@@ -10,6 +10,5 @@ public class GameSceneManager : MonoBehaviour
     private void Start()
     {
         AudioManager.instance.PlayAudio(_backgroundMusic);
-        Debug.Log("Sad tunes");
     }
 }
