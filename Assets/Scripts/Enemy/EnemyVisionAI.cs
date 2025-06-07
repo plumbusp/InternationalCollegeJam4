@@ -1,11 +1,15 @@
 ﻿using UnityEngine;
 using CodeMonkey.Utils;
 using System;
+using UnityEngine.UIElements;
 
-public class EnemyVisionAI : MonoBehaviour, IEnemyPerceptionAI
+public class EnemyVisionAI : IEnemyPerceptionAI
 {
-    private Action _onTargetDetected;
-    public Action OnTargetDetected { get => _onTargetDetected; set => _onTargetDetected = value; }
+    private Action<Transform> _onTargetDetected;
+    private Action _onTargetLost;
+    override public Action<Transform> OnTargetDetected { get => _onTargetDetected; set => _onTargetDetected = value; }
+    override public Action OnTargetLost { get => _onTargetLost; set => _onTargetLost = value; }
+
 
     // Field of View Visuals
     Mesh mesh;
@@ -25,33 +29,33 @@ public class EnemyVisionAI : MonoBehaviour, IEnemyPerceptionAI
     [SerializeField] float noticeCoolDown;
     // Field of View Visuals
 
-    private bool isInitialized;
     private EnemyParameters enemyParameters;
+    private Transform enemyTransform;
     public bool IsTarget { get; private set; }
+   
+    private bool _detected;
+    private bool _isSeeingTaget;
 
-    private void Start()
+
+    override public void Initialize(EnemyParameters enemyParameters, Transform enemyTransform)
     {
-        if (!isInitialized)
-            return;
+        this.enemyParameters = enemyParameters;
+        this.enemyTransform = enemyTransform;
 
         mesh = new Mesh();
         meshFilter.mesh = mesh;
     }
 
-    public void Initialize(EnemyParameters enemyParameters)
-    {
-        isInitialized = true;
-        this.enemyParameters = enemyParameters;
-
-    }
-
     /// <summary>
     /// For smoother work should be called from LateUpdate
     /// </summary>
-    public void Detect()
+    override public void Detect()
     {
         IsTarget = false;
-        
+
+        SetOrigin(enemyTransform.position);
+        SetDirection(enemyTransform.right);
+
         // creating field of view visuals
         transform.position = Vector3.zero;
         transform.rotation = Quaternion.identity;
@@ -74,14 +78,6 @@ public class EnemyVisionAI : MonoBehaviour, IEnemyPerceptionAI
             RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, UtilsClass.GetVectorFromAngle(angle), distance, layerMask);
             Vector2 vertex = raycastHit2D.collider ? raycastHit2D.point : origin + MathHelper.AngleToVector2D(angle + transform.eulerAngles.y) * distance;
 
-            if (raycastHit2D.collider != null) 
-            {
-                if(CheckForTargetTag(raycastHit2D.collider.tag))
-                {
-                    OnTargetDetected?.Invoke();
-                }
-            }
-
             vertices[vertexIndex] = vertex;
 
             if (i > 0)
@@ -98,6 +94,21 @@ public class EnemyVisionAI : MonoBehaviour, IEnemyPerceptionAI
             angle -= angleIncrease;
 
             mesh.RecalculateBounds();
+
+            _detected = (raycastHit2D.collider != null) && (CheckForTargetTag(raycastHit2D.collider.tag));
+
+            //States and events handling
+            if (_detected && !_isSeeingTaget)
+            {
+                _isSeeingTaget = true;
+                OnTargetDetected?.Invoke(raycastHit2D.collider.transform);
+            }
+            else if (!_detected && _isSeeingTaget)
+            {
+                _isSeeingTaget = false;
+                OnTargetLost?.Invoke();
+            }
+            //States and events handling
         }
 
         mesh.vertices = vertices;
@@ -105,12 +116,12 @@ public class EnemyVisionAI : MonoBehaviour, IEnemyPerceptionAI
         mesh.triangles = triangles;
     }
 
-    public void SetOrigin(Vector3 origin)
+    private void SetOrigin(Vector3 origin)
     {
         this.origin = origin + offset;
     }
 
-    public void SetDirection(Vector3 direction)
+    private void SetDirection(Vector3 direction)
     {
         startAngle = MathHelper.VectorToAngle2D(direction) + fieldOfView / 2f;
     }

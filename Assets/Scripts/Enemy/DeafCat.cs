@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static EnemyMovement;
 
 public class DeafCat : MonoBehaviour
 {
@@ -10,28 +11,23 @@ public class DeafCat : MonoBehaviour
     // if patrolled enought return
     // 
 
-    [SerializeField] private IEnemyPerceptionAI enemyVisionAI;
+    [SerializeReference] private IEnemyPerceptionAI enemyVisionAI;
     [SerializeField] private EnemyParameters deafCatParameters;
+    [SerializeField] private EnemyMovement EnemyMovement;
+
+
     //Enemy movement script 
     private void Start()
     {
-        enemyVisionAI.Initialize(deafCatParameters);
-        enemyVisionAI.OnTargetDetected += HandleTargetDetection;
-        //Subsribe on enemy catched player
-    }
+        enemyVisionAI.Initialize(deafCatParameters, transform);
+        enemyVisionAI.OnTargetDetected += (Transform target) => EnemyMovement.Chase(target);
+        enemyVisionAI.OnTargetLost += EnemyMovement.LookAround;
 
-    private void Update()
-    {
-        //Move enemy according to detection reesults
+        EnemyMovement.Intialize(deafCatParameters);
+        EnemyMovement.Patrol();
     }
     private void LateUpdate()
     {
         enemyVisionAI.Detect();
-    }
-
-    private void HandleTargetDetection()
-    {
-        //Switch to chasing
-        //
     }
 }

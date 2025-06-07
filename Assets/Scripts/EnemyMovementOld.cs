@@ -42,7 +42,7 @@ public class EnemyMovementOld : MonoBehaviour
     private void Update()
     {
         Move();
-        _EnemyFieldOfView.SetOrigin(_origin.position);
+        //_EnemyFieldOfView.SetOrigin(_origin.position);
     }
 
     private WayPoint GetNextWayPoint()

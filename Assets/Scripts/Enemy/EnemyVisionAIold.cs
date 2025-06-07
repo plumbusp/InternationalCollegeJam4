@@ -8,6 +8,7 @@ using static UnityEngine.GraphicsBuffer;
 public class EnemyVisionAIold : MonoBehaviour
 {
     /*
+    
     [Header("Settings")]
     [SerializeField] private float chaseSpeed = 5f;
     [SerializeField] private float normalSpeed = 3f;
@@ -23,7 +24,7 @@ public class EnemyVisionAIold : MonoBehaviour
 
     [Header("Mouse Settings")]
     [SerializeField] private Mouse mouse;
-    [SerializeField] private float mouseEatingTime = 3f;
+    //[SerializeField] private float mouseEatingTime = 3f;
 
     private WaitForSeconds mouseEatingDelay;
     private Queue<Transform> waypointQueue;
@@ -91,13 +92,13 @@ public class EnemyVisionAIold : MonoBehaviour
     }
     #endregion
 
-    #region Field of View
-    private void UpdateFieldOfView()
-    {
-        fieldOfView.SetOrigin(transform.position);
-        fieldOfView.SetDirection(transform.right);
-    }
-    #endregion
+    //#region Field of View
+    //private void UpdateFieldOfView()
+    //{
+    //    fieldOfView.SetOrigin(transform.position);
+    //    fieldOfView.SetDirection(transform.right);
+    //}
+    //#endregion
 
     #region Target Handling
     private void HandlePlayerDetection()

@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 public class SimpleEnemyVisionAI : MonoBehaviour
 {
-
+    /*
     [Header("Settings")]
     [SerializeField] private float chaseSpeed = 5f;
     [SerializeField] private float normalSpeed = 3f;
@@ -190,4 +190,5 @@ public class SimpleEnemyVisionAI : MonoBehaviour
             Time.deltaTime * smoothRotationSpeed * 100
         );
     }
+    */
 }
