@@ -1,207 +1,124 @@
+﻿using UnityEngine;
+using CodeMonkey.Utils;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.AI;
-using static UnityEngine.GraphicsBuffer;
 
-public class EnemyVisionAI : MonoBehaviour
+public class EnemyVisionAI : MonoBehaviour, IEnemyPerceptionAI
 {
-    [Header("Settings")]
-    [SerializeField] private float chaseSpeed = 5f;
-    [SerializeField] private float normalSpeed = 3f;
-    [SerializeField] private float deathRange = 1.5f;
-    [SerializeField] private float patrolStopDistance = 1f;
-    [SerializeField] private float smoothRotationSpeed = 5f;
+    private Action _onTargetDetected;
+    public Action OnTargetDetected { get => _onTargetDetected; set => _onTargetDetected = value; }
 
-    [Header("References")]
-    [SerializeField] private FieldOfView fieldOfView;
-    [SerializeField] private NavMeshAgent agent;
-    [SerializeField] private HamsterMovement player;
-    [SerializeField] private List<Transform> waypoints;
+    // Field of View Visuals
+    Mesh mesh;
 
-    [Header("Mouse Settings")]
-    [SerializeField] private Mouse mouse;
-    [SerializeField] private float mouseEatingTime = 3f;
+    Vector3 origin = Vector3.zero;
 
-    private WaitForSeconds mouseEatingDelay;
-    private Queue<Transform> waypointQueue;
-    private Transform currentTarget;
+    float startAngle;
 
-    private bool isPlayerDead = false;
-    private bool isWaiting = false;
-    private Vector3 lastKnownPosition;
+    [SerializeField] MeshFilter meshFilter;
+    [SerializeField] int rayCount = 2;
+    [SerializeField] float fieldOfView = 90f;
+    [SerializeField] float distance = 50f;
+    [SerializeField] Vector3 offset;
+    //[SerializeField] string targetTag;
+    //[SerializeField] string mouseTag;
+    [SerializeField] LayerMask layerMask;
+    [SerializeField] float noticeCoolDown;
+    // Field of View Visuals
+
+    private bool isInitialized;
+    private EnemyParameters enemyParameters;
+    public bool IsTarget { get; private set; }
 
     private void Start()
     {
-        InitializeAgent();
-        InitializeWaypoints();
-        SubscribeToEvents();
+        if (!isInitialized)
+            return;
 
-        mouseEatingDelay = new WaitForSeconds(mouseEatingTime);
-
-        MoveToNextWaypoint();
+        mesh = new Mesh();
+        meshFilter.mesh = mesh;
     }
 
-    private void Update()
+    public void Initialize(EnemyParameters enemyParameters)
     {
-        UpdateFieldOfView();
-        if (isPlayerDead || isWaiting) return;
-        SmoothRotateTowardsMovement();
+        isInitialized = true;
+        this.enemyParameters = enemyParameters;
 
-        if (currentTarget != null)
+    }
+
+    /// <summary>
+    /// For smoother work should be called from LateUpdate
+    /// </summary>
+    public void Detect()
+    {
+        IsTarget = false;
+        
+        // creating field of view visuals
+        transform.position = Vector3.zero;
+        transform.rotation = Quaternion.identity;
+
+        var angle = startAngle;
+        var angleIncrease = fieldOfView / rayCount;
+
+        var vertices = new Vector3[rayCount + 1 + 1];
+        var uv = new Vector2[vertices.Length];
+        var triangles = new int[rayCount * 3];
+
+        var vertexIndex = 1;
+        var trianglesIndex = 0;
+
+        vertices[0] = origin;
+        // creating field of view visuals
+
+        for (int i = 0; i <= rayCount; i++)
         {
-            ProcessTargetBehavior();
-        }
-        else if (agent.remainingDistance <= patrolStopDistance)
-        {
-            MoveToNextWaypoint();
-        }
-    }
+            RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, UtilsClass.GetVectorFromAngle(angle), distance, layerMask);
+            Vector2 vertex = raycastHit2D.collider ? raycastHit2D.point : origin + MathHelper.AngleToVector2D(angle + transform.eulerAngles.y) * distance;
 
-    #region Initialization
-    private void InitializeAgent()
-    {
-        agent.updateRotation = false;
-        agent.updateUpAxis = false;
-        agent.speed = normalSpeed;
-    }
-
-    private void InitializeWaypoints()
-    {
-        waypointQueue = new Queue<Transform>();
-        foreach (var waypoint in waypoints)
-        {
-            if (waypoint != null)
+            if (raycastHit2D.collider != null) 
             {
-                waypointQueue.Enqueue(waypoint);
-            }
-            else
-            {
-                Debug.LogWarning("Waypoint is null! Skipping...");
-            }
-        }
-    }
-
-    private void SubscribeToEvents()
-    {
-        fieldOfView.OnPlayerDetected += HandlePlayerDetection;
-        fieldOfView.OnMouseDetected += HandleMouseDetection;
-    }
-    #endregion
-
-    #region Field of View
-    private void UpdateFieldOfView()
-    {
-        fieldOfView.SetOrigin(transform.position);
-        fieldOfView.SetDirection(transform.right);
-    }
-    #endregion
-
-    #region Target Handling
-    private void HandlePlayerDetection()
-    {
-        if (player.InSafeSpot || isPlayerDead) return;
-
-        SetTarget(player.transform, chaseSpeed);
-    }
-
-    private void HandleMouseDetection()
-    {
-        //player.InSafeSpot = true;
-        SetTarget(mouse.transform, chaseSpeed);
-    }
-
-    private void SetTarget(Transform target, float speed)
-    {
-        currentTarget = target;
-        agent.speed = speed;
-    }
-
-    private void ProcessTargetBehavior()
-    {
-        agent.SetDestination(currentTarget.position);
-
-        if (currentTarget == player.transform)
-        {
-            if (IsInRange(player.transform, deathRange))
-            {
-                HandlePlayerCaught();
-            }
-            else if (!fieldOfView.IsTarget)
-            {
-                StopChasingPlayer();
+                if(CheckForTargetTag(raycastHit2D.collider.tag))
+                {
+                    OnTargetDetected?.Invoke();
+                }
             }
 
-            lastKnownPosition = player.transform.position;
-        }
-        else if (currentTarget == mouse.transform)
-        {
-            Debug.Log(IsInRange(mouse.transform, deathRange) + "   " + Vector2.Distance(transform.position, currentTarget.position));
-            if (IsInRange(mouse.transform, deathRange))
+            vertices[vertexIndex] = vertex;
+
+            if (i > 0)
             {
-                StartCoroutine(HandleMouseInteraction());
+                triangles[trianglesIndex + 0] = 0;
+                triangles[trianglesIndex + 1] = vertexIndex - 1;
+                triangles[trianglesIndex + 2] = vertexIndex;
+
+                trianglesIndex += 3;
             }
+
+            vertexIndex++;
+
+            angle -= angleIncrease;
+
+            mesh.RecalculateBounds();
         }
-    }
-    #endregion
 
-    #region Target Interaction
-    private bool IsInRange(Transform target, float range)
-    {
-        return Vector2.Distance(transform.position, target.position) <= range;
+        mesh.vertices = vertices;
+        mesh.uv = uv;
+        mesh.triangles = triangles;
     }
 
-    private void HandlePlayerCaught()
+    public void SetOrigin(Vector3 origin)
     {
-        AudioManager.instance.PlayAudio(SFXType.CatAngry);
-        isPlayerDead = true;
-        agent.isStopped = true;
-        ScreensLogic.Instance.ShowDeadScreen();
-        Debug.Log("Player LOST!");
+        this.origin = origin + offset;
     }
 
-    private void StopChasingPlayer()
+    public void SetDirection(Vector3 direction)
     {
-        currentTarget = null;
-        agent.speed = normalSpeed;
-        agent.SetDestination(lastKnownPosition);
+        startAngle = MathHelper.VectorToAngle2D(direction) + fieldOfView / 2f;
     }
 
-    private IEnumerator HandleMouseInteraction()
+    private bool CheckForTargetTag(string tagName)
     {
-        isWaiting = true;
-        currentTarget = null;
-
-        yield return mouseEatingDelay;
-
-        isWaiting = false;
-        //player.InSafeSpot = false;
-        mouse.Eat();
-        MoveToNextWaypoint();
-    }
-    #endregion
-
-    #region Patrolling
-    private void MoveToNextWaypoint()
-    {
-        var nextWaypoint = waypointQueue.Dequeue();
-        waypointQueue.Enqueue(nextWaypoint);
-
-        agent.SetDestination(nextWaypoint.position);
-    }
-    #endregion
-
-    #region Rotation
-    private void SmoothRotateTowardsMovement()
-    {
-        if (agent.velocity.sqrMagnitude > 0.01f)
-        {
-            Vector2 direction = agent.velocity.normalized;
-            float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            float smoothedAngle = Mathf.LerpAngle(transform.eulerAngles.z, targetAngle, Time.deltaTime * smoothRotationSpeed);
-            transform.rotation = Quaternion.Euler(0, 0, smoothedAngle);
-        }
+        if (enemyParameters.DetectionTags.Contains(tagName))
+            return true;
+        return false;
     }
 }
-    #endregion

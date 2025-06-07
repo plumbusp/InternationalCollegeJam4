@@ -1,11 +1,13 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.GraphicsBuffer;
 
-public class SimpleEnemyVisionAI : MonoBehaviour
+public class EnemyVisionAIold : MonoBehaviour
 {
-
+    /*
     [Header("Settings")]
     [SerializeField] private float chaseSpeed = 5f;
     [SerializeField] private float normalSpeed = 3f;
@@ -17,36 +19,29 @@ public class SimpleEnemyVisionAI : MonoBehaviour
     [SerializeField] private EnemyVisionAI fieldOfView;
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private HamsterMovement player;
+    [SerializeField] private List<Transform> waypoints;
 
     [Header("Mouse Settings")]
     [SerializeField] private Mouse mouse;
     [SerializeField] private float mouseEatingTime = 3f;
 
     private WaitForSeconds mouseEatingDelay;
+    private Queue<Transform> waypointQueue;
     private Transform currentTarget;
 
     private bool isPlayerDead = false;
     private bool isWaiting = false;
-
-    [SerializeField] private Transform _rotationTarget;
-    private Vector3 _initialPosition;
-    private float _initialZRotation;
-    private bool _onInitialRotation;
+    private Vector3 lastKnownPosition;
 
     private void Start()
     {
-        agent.updateRotation = false;
-        agent.updateUpAxis = false;
-        agent.speed = normalSpeed;
-
-
-        fieldOfView.OnTargetDetected += HandlePlayerDetection;
-        fieldOfView.OnMouseDetected += HandleMouseDetection;
+        InitializeAgent();
+        InitializeWaypoints();
+        SubscribeToEvents();
 
         mouseEatingDelay = new WaitForSeconds(mouseEatingTime);
 
-        _initialPosition = transform.position;
-        _initialZRotation = transform.eulerAngles.z;
+        MoveToNextWaypoint();
     }
 
     private void Update()
@@ -57,23 +52,44 @@ public class SimpleEnemyVisionAI : MonoBehaviour
 
         if (currentTarget != null)
         {
-            SmoothRotateTowardsMovement();
             ProcessTargetBehavior();
         }
-        else if (Vector2.Distance(transform.position, _initialPosition) > patrolStopDistance)
+        else if (agent.remainingDistance <= patrolStopDistance)
         {
-            SmoothRotateTowardsMovement();
-            agent.SetDestination(_initialPosition);
-        }
-        else if (!_onInitialRotation)
-        {
-            RotateAgentTowardsTarget(_rotationTarget);
-        }
-        else
-        {
+            MoveToNextWaypoint();
         }
     }
 
+    #region Initialization
+    private void InitializeAgent()
+    {
+        agent.updateRotation = false;
+        agent.updateUpAxis = false;
+        agent.speed = normalSpeed;
+    }
+
+    private void InitializeWaypoints()
+    {
+        waypointQueue = new Queue<Transform>();
+        foreach (var waypoint in waypoints)
+        {
+            if (waypoint != null)
+            {
+                waypointQueue.Enqueue(waypoint);
+            }
+            else
+            {
+                Debug.LogWarning("Waypoint is null! Skipping...");
+            }
+        }
+    }
+
+    private void SubscribeToEvents()
+    {
+        fieldOfView.OnTargetDetected += HandlePlayerDetection;
+        fieldOfView.OnMouseDetected += HandleMouseDetection;
+    }
+    #endregion
 
     #region Field of View
     private void UpdateFieldOfView()
@@ -115,9 +131,10 @@ public class SimpleEnemyVisionAI : MonoBehaviour
             }
             else if (!fieldOfView.IsTarget)
             {
-                currentTarget = null;
-                return;
+                StopChasingPlayer();
             }
+
+            lastKnownPosition = player.transform.position;
         }
         else if (currentTarget == mouse.transform)
         {
@@ -145,6 +162,13 @@ public class SimpleEnemyVisionAI : MonoBehaviour
         Debug.Log("Player LOST!");
     }
 
+    private void StopChasingPlayer()
+    {
+        currentTarget = null;
+        agent.speed = normalSpeed;
+        agent.SetDestination(lastKnownPosition);
+    }
+
     private IEnumerator HandleMouseInteraction()
     {
         isWaiting = true;
@@ -155,10 +179,21 @@ public class SimpleEnemyVisionAI : MonoBehaviour
         isWaiting = false;
         //player.InSafeSpot = false;
         mouse.Eat();
+        MoveToNextWaypoint();
     }
     #endregion
 
+    #region Patrolling
+    private void MoveToNextWaypoint()
+    {
+        var nextWaypoint = waypointQueue.Dequeue();
+        waypointQueue.Enqueue(nextWaypoint);
 
+        agent.SetDestination(nextWaypoint.position);
+    }
+    #endregion
+
+    #region Rotation
     private void SmoothRotateTowardsMovement()
     {
         if (agent.velocity.sqrMagnitude > 0.01f)
@@ -170,24 +205,10 @@ public class SimpleEnemyVisionAI : MonoBehaviour
         }
     }
 
-    private void RotateAgentTowardsTarget(Transform target)
+    public void Detect()
     {
-        if (target == null) return;
-
-        // Calculate the direction towards the target
-        Vector3 direction = (target.position - transform.position).normalized;
-
-        // Ignore vertical differences if needed
-        direction.z = 0;
-
-        // Calculate the desired rotation
-        Quaternion targetRotation = Quaternion.LookRotation(Vector3.forward, direction);
-
-        // Smoothly interpolate rotation (optional)
-        transform.rotation = Quaternion.RotateTowards(
-            transform.rotation,
-            targetRotation,
-            Time.deltaTime * smoothRotationSpeed * 100
-        );
+        throw new NotImplementedException();
     }
+        #endregion
+    */
 }

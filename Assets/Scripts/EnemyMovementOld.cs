@@ -4,10 +4,10 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class EnemyMovement : MonoBehaviour
+public class EnemyMovementOld : MonoBehaviour
 {
     [Header("Enemy Field Of View")]
-    [SerializeField] private FieldOfView _EnemyFieldOfView;
+    [SerializeField] private EnemyVisionAI _EnemyFieldOfView;
     [SerializeField] private Transform _origin;
 
     [Space (30f)]
