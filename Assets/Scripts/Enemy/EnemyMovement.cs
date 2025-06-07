@@ -34,6 +34,7 @@ public class EnemyMovement : MonoBehaviour
         this.enemyParameters = enemyParameters;
         InitializeAgent();
         InitializeWaypoints();
+        agent.updateRotation = false;
     }
     public enum MovementState
     {
@@ -109,13 +110,13 @@ public class EnemyMovement : MonoBehaviour
     }
     #endregion
     private void SmoothRotateTowardsMovement()
-    {
-        if (agent.velocity.sqrMagnitude > 0.01f)
+    {  
+        if(agent.velocity.sqrMagnitude >= 0.01)
         {
-            Vector2 direction = agent.velocity.normalized;
-            float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            float smoothedAngle = Mathf.LerpAngle(transform.eulerAngles.z, targetAngle, Time.deltaTime * smoothRotationSpeed);
-            transform.rotation = Quaternion.Euler(0, 0, smoothedAngle);
+            float currentAngle = transform.eulerAngles.z;
+            float targetAngle = Mathf.Atan2(agent.velocity.y, agent.velocity.x) * Mathf.Rad2Deg;
+            float smoothLerp = Mathf.LerpAngle(targetAngle, currentAngle, Time.deltaTime * smoothRotationSpeed);
+            transform.rotation = Quaternion.Euler(0, 0, smoothLerp);
         }
     }
 }
