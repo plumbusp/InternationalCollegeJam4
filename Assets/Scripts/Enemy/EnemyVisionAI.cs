@@ -44,6 +44,7 @@ public class EnemyVisionAI : IEnemyPerceptionAI
 
         mesh = new Mesh();
         meshFilter.mesh = mesh;
+        _isSeeingTaget = false;
     }
 
     /// <summary>
@@ -98,15 +99,15 @@ public class EnemyVisionAI : IEnemyPerceptionAI
             _detected = (raycastHit2D.collider != null) && (CheckForTargetTag(raycastHit2D.collider.tag));
 
             //States and events handling
-            if (_detected && !_isSeeingTaget)
+            if (_detected && (_isSeeingTaget == false))
             {
                 _isSeeingTaget = true;
-                OnTargetDetected?.Invoke(raycastHit2D.collider.transform);
+                _onTargetDetected?.Invoke(raycastHit2D.collider.transform);
             }
-            else if (!_detected && _isSeeingTaget)
+            else if (!_detected && _isSeeingTaget == true)
             {
                 _isSeeingTaget = false;
-                OnTargetLost?.Invoke();
+                _onTargetLost?.Invoke();
             }
             //States and events handling
         }

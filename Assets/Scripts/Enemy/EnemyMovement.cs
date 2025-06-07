@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using static EnemyMovement;
 
 public class EnemyMovement : MonoBehaviour
 {
@@ -25,7 +24,7 @@ public class EnemyMovement : MonoBehaviour
 
 
     private EnemyParameters enemyParameters;
-    private bool _isInitialized;
+    private Coroutine currentCoroutine;
 
     // Look around parameters
     private bool lookAround;
@@ -53,7 +52,6 @@ public class EnemyMovement : MonoBehaviour
             if (agent.remainingDistance < patrolStopDistance)
             {
                 MoveToNextWaypoint();
-                Debug.Log("Patroling");
             }
         }
     }
@@ -66,13 +64,26 @@ public class EnemyMovement : MonoBehaviour
     }
     public void Patrol()
     {
+        Debug.Log("Patrol");
         movementState = MovementState.none;
     }
     public void LookAround()
     {
+        // Currently just goes to the last seen spot and waits for a bit
         movementState = MovementState.lookingAround;
-        //LookedAroundFoundNothing?.Invoke();
         Debug.Log("Looking around");
+        if(currentCoroutine != null)
+        {
+            Debug.LogWarning("The coroutine is already running. Restarting the coroutine.");
+            StopCoroutine(currentCoroutine);
+        }
+        currentCoroutine = StartCoroutine(LookAroundCoroutine());
+    }
+
+    private IEnumerator LookAroundCoroutine()
+    {
+        yield return new WaitForSeconds(3f);
+        LookedAroundFoundNothing?.Invoke();
         movementState = MovementState.none;
     }
 
