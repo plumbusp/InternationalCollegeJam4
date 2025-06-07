@@ -5,13 +5,8 @@ using static EnemyMovement;
 
 public class DeafCat : MonoBehaviour
 {
-    // Detect()
-    // Ondetected get and set distanation to it
-    // if lost patrol
-    // if patrolled enought return
-    // 
 
-    [SerializeReference] private IEnemyPerceptionAI enemyVisionAI;
+    [SerializeField] private IEnemyPerceptionAI enemyVisionAI;
     [SerializeField] private EnemyParameters deafCatParameters;
     [SerializeField] private EnemyMovement EnemyMovement;
 
@@ -25,6 +20,7 @@ public class DeafCat : MonoBehaviour
 
         EnemyMovement.Intialize(deafCatParameters);
         EnemyMovement.Patrol();
+        //Subsribe on enemy catched player
     }
     private void LateUpdate()
     {

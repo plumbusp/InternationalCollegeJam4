@@ -26,14 +26,22 @@ public class EnemyMovement : MonoBehaviour
     private EnemyParameters enemyParameters;
     private Coroutine currentCoroutine;
 
-    // Look around parameters
-    private bool lookAround;
+    private bool noPatrol;
+    private float initialEulerZ;
+    private Vector3 initialPosition;
+
     public void Intialize(EnemyParameters enemyParameters)
     {
         this.enemyParameters = enemyParameters;
         InitializeAgent();
         InitializeWaypoints();
         agent.updateRotation = false;
+        if (waypoints.Count == 1)
+        {
+            noPatrol = true;
+        }
+        initialEulerZ = transform.eulerAngles.z;
+        initialPosition = transform.position;
     }
     public enum MovementState
     {
@@ -46,10 +54,28 @@ public class EnemyMovement : MonoBehaviour
     private void Update()
     {
         SmoothRotateTowardsMovement();
-
+        
         if (movementState == MovementState.none)
         {
-            if (agent.remainingDistance < patrolStopDistance)
+            if (noPatrol)
+            {
+                if(Vector3.Distance(transform.position, initialPosition) > 2f)
+                {
+                    agent.SetDestination(initialPosition);
+                    Debug.Log("Reaching If");
+                }
+                else if(Mathf.Abs(Mathf.DeltaAngle(transform.eulerAngles.z, initialEulerZ)) > 5f)
+                {
+                    float smoothLerp = Mathf.LerpAngle(initialEulerZ,transform.rotation.z, Time.deltaTime * 0.1f);
+                    transform.rotation = Quaternion.Euler(0,0, smoothLerp);
+                    Debug.Log("Reaching Else If");
+                }
+                else
+                {
+                    return;
+                }
+            }
+            else if (agent.remainingDistance < patrolStopDistance)
             {
                 MoveToNextWaypoint();
             }
