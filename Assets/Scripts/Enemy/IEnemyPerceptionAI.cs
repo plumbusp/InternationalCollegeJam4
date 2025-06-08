@@ -13,4 +13,6 @@ public abstract class IEnemyPerceptionAI: MonoBehaviour
     public abstract void Detect();
     public abstract Action<Transform> OnTargetDetected {  get; set; }
     public abstract Action OnTargetLost {  get; set; }
+    public abstract Action<Transform> OnTargetCanBeKilled { get; set; }
+    public abstract bool isAllowedToDetect { get; set; }
 }

@@ -6,22 +6,42 @@ using UnityEngine.AI;
 
 public class EnemyMovement : MonoBehaviour
 {
-    public Action LookedAroundFoundNothing;
-
     [Header("References")]
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private List<Transform> waypoints;
 
     private Queue<Transform> waypointQueue;
     private Transform currentTarget;
-
-
     private EnemyParameters enemyParameters;
     private Coroutine currentCoroutine;
-
     private bool noPatrol;
     private float initialEulerZ;
     private Vector3 initialPosition;
+
+    private bool _allowedToMove;
+    public bool isAllowedToMove
+    {
+        get
+        {
+            return _allowedToMove;
+        }
+        set
+        {
+            _allowedToMove = value;
+            if(_allowedToMove == false)
+                agent.isStopped = true;
+            else
+                agent.isStopped = false;
+        }
+    }
+
+    public enum MovementState
+    {
+        none,
+        chasing,
+        lookingAround
+    }
+    public MovementState movementState;
 
     public void Intialize(EnemyParameters enemyParameters)
     {
@@ -37,16 +57,12 @@ public class EnemyMovement : MonoBehaviour
         initialPosition = transform.position;
 
     }
-    public enum MovementState
-    {
-        none,
-        chasing,
-        lookingAround
-    }
-    public MovementState movementState;
 
     private void Update()
     {
+        if(!_allowedToMove)
+            return;
+
         SmoothRotateTowardsMovement();
         
         if (movementState == MovementState.none)
@@ -68,6 +84,9 @@ public class EnemyMovement : MonoBehaviour
 
     public void Chase(Transform target)
     {
+        if (!_allowedToMove)
+            return;
+
         Debug.Log("Chasing");
         movementState = MovementState.chasing;
         agent.SetDestination(target.position);
@@ -75,6 +94,9 @@ public class EnemyMovement : MonoBehaviour
     }
     public void Patrol()
     {
+        if (!_allowedToMove)
+            return;
+
         Debug.Log("Patrol");
         movementState = MovementState.none;
         if (noPatrol)
@@ -85,6 +107,9 @@ public class EnemyMovement : MonoBehaviour
     }
     public void LookAround()
     {
+        if (!_allowedToMove)
+            return;
+
         // Currently just goes to the last seen spot and waits for a bit
         Debug.Log("Looking around");
         movementState = MovementState.lookingAround;
@@ -99,10 +124,10 @@ public class EnemyMovement : MonoBehaviour
     private IEnumerator LookAroundCoroutine()
     {
         yield return new WaitForSeconds(3f);
-        LookedAroundFoundNothing?.Invoke();
         Patrol();
     }
 
+    #region Initialization methods
     private void InitializeAgent()
     {
         agent.updateRotation = false;
@@ -127,6 +152,8 @@ public class EnemyMovement : MonoBehaviour
 
     }
 
+    #endregion
+
     #region Patrolling
     private void MoveToNextWaypoint()
     {
@@ -136,6 +163,8 @@ public class EnemyMovement : MonoBehaviour
         agent.SetDestination(nextWaypoint.position);
     }
     #endregion
+
+    #region Rotating
     private void SmoothRotateTowardsMovement()
     {  
         if(agent.velocity.sqrMagnitude >= 0.01)
@@ -169,4 +198,5 @@ public class EnemyMovement : MonoBehaviour
             //Debug.Log($"{initialEulerZ} initialEulerZ and {currentAngle} currentAngle  and {smoothLerp} smoothLerp");
         }
     }
+    #endregion
 }

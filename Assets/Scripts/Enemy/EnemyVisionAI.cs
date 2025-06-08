@@ -7,9 +7,23 @@ public class EnemyVisionAI : IEnemyPerceptionAI
 {
     private Action<Transform> _onTargetDetected;
     private Action _onTargetLost;
+    private Action<Transform> _onTargetCanBeKilled;
     override public Action<Transform> OnTargetDetected { get => _onTargetDetected; set => _onTargetDetected = value; }
     override public Action OnTargetLost { get => _onTargetLost; set => _onTargetLost = value; }
+    public override Action<Transform> OnTargetCanBeKilled { get => _onTargetCanBeKilled; set => _onTargetCanBeKilled = value; }
 
+    private bool _isAllowedToDetect;
+    public override bool isAllowedToDetect 
+    {
+        get 
+        {
+            return _isAllowedToDetect;
+        }
+        set
+        {
+            _isAllowedToDetect = value;
+        }
+    }
 
     // Field of View Visuals
     Mesh mesh;
@@ -23,8 +37,6 @@ public class EnemyVisionAI : IEnemyPerceptionAI
     [SerializeField] float fieldOfView = 90f;
     [SerializeField] float distance = 50f;
     [SerializeField] Vector3 offset;
-    //[SerializeField] string targetTag;
-    //[SerializeField] string mouseTag;
     [SerializeField] LayerMask layerMask;
     [SerializeField] float noticeCoolDown;
     // Field of View Visuals
@@ -32,10 +44,9 @@ public class EnemyVisionAI : IEnemyPerceptionAI
     private EnemyParameters enemyParameters;
     private Transform enemyTransform;
     public bool IsTarget { get; private set; }
-   
+
     private bool _detected;
     private bool _isSeeingTaget;
-
 
     override public void Initialize(EnemyParameters enemyParameters, Transform enemyTransform)
     {
@@ -47,11 +58,15 @@ public class EnemyVisionAI : IEnemyPerceptionAI
         _isSeeingTaget = false;
     }
 
+
     /// <summary>
     /// For smoother work should be called from LateUpdate
     /// </summary>
     override public void Detect()
     {
+        if (!_isAllowedToDetect)
+            return;
+
         IsTarget = false;
 
         SetOrigin(enemyTransform.position);
@@ -110,6 +125,20 @@ public class EnemyVisionAI : IEnemyPerceptionAI
                 _onTargetLost?.Invoke();
             }
             //States and events handling
+
+            //Killing Handling
+            if (_detected)
+            {
+                var collidersInRange = Physics2D.OverlapCircleAll(origin, enemyParameters.deathRange);
+                foreach (var collider in collidersInRange)
+                {
+                    if (CheckForTargetTag(collider.transform.tag))
+                    {
+                        OnTargetCanBeKilled?.Invoke(collider.transform);
+                        break;
+                    }
+                }
+            }
         }
 
         mesh.vertices = vertices;
