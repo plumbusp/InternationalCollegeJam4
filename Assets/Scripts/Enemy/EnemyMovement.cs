@@ -8,13 +8,6 @@ public class EnemyMovement : MonoBehaviour
 {
     public Action LookedAroundFoundNothing;
 
-    [Header("Settings")]
-    [SerializeField] private float chaseSpeed = 5f;
-    [SerializeField] private float normalSpeed = 3f;
-    [SerializeField] private float deathRange = 1.5f;
-    [SerializeField] private float patrolStopDistance = 1f;
-    [SerializeField] private float smoothRotationSpeed = 5f;
-
     [Header("References")]
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private List<Transform> waypoints;
@@ -66,7 +59,7 @@ public class EnemyMovement : MonoBehaviour
                     SmoothRotateToInitialRotation();
                 }
             }
-            else if (agent.remainingDistance < patrolStopDistance)
+            else if (agent.remainingDistance < enemyParameters.patrolStopDistance)
             {
                 MoveToNextWaypoint();
             }
@@ -75,9 +68,10 @@ public class EnemyMovement : MonoBehaviour
 
     public void Chase(Transform target)
     {
+        Debug.Log("Chasing");
         movementState = MovementState.chasing;
         agent.SetDestination(target.position);
-        Debug.Log("Chasing");
+        agent.speed = enemyParameters.chaseSpeed;
     }
     public void Patrol()
     {
@@ -87,12 +81,13 @@ public class EnemyMovement : MonoBehaviour
         {
             agent.SetDestination(initialPosition);
         }
+        agent.speed = enemyParameters.normalSpeed;
     }
     public void LookAround()
     {
         // Currently just goes to the last seen spot and waits for a bit
-        movementState = MovementState.lookingAround;
         Debug.Log("Looking around");
+        movementState = MovementState.lookingAround;
         if(currentCoroutine != null)
         {
             Debug.LogWarning("The coroutine is already running. Restarting the coroutine.");
@@ -112,7 +107,7 @@ public class EnemyMovement : MonoBehaviour
     {
         agent.updateRotation = false;
         agent.updateUpAxis = false;
-        agent.speed = normalSpeed;
+        agent.speed = enemyParameters.normalSpeed;
     }
 
     private void InitializeWaypoints()
@@ -147,7 +142,7 @@ public class EnemyMovement : MonoBehaviour
         {
             float currentAngle = transform.eulerAngles.z;
             float targetAngle = Mathf.Atan2(agent.velocity.y, agent.velocity.x) * Mathf.Rad2Deg;
-            float smoothLerp = Mathf.LerpAngle(targetAngle, currentAngle, Time.deltaTime * smoothRotationSpeed);
+            float smoothLerp = Mathf.LerpAngle(targetAngle, currentAngle, Time.deltaTime * enemyParameters.smoothRotationSpeed);
             transform.rotation = Quaternion.Euler(0, 0, smoothLerp);
         }
     }
@@ -166,7 +161,7 @@ public class EnemyMovement : MonoBehaviour
         else
         {
             float currentAngle = transform.eulerAngles.z;
-            float t = Time.deltaTime * smoothRotationSpeed;
+            float t = Time.deltaTime * enemyParameters.smoothRotationSpeed;
             if (t < 0.05f) //Avoiding extremely small numbers
                 t = 0.05f;
             float smoothLerp = Mathf.LerpAngle(currentAngle, initialEulerZ, t);

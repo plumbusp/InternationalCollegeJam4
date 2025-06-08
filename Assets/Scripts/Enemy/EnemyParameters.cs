@@ -6,5 +6,11 @@ using UnityEngine;
 public class EnemyParameters : ScriptableObject
 {
     public List<string> DetectionTags = new List<string>();
-    public float MouseEatingTime;
+    public float mouseEatingTime;
+    //Movement Parameters
+    public float chaseSpeed;
+    public float normalSpeed;
+    public float deathRange;
+    public float patrolStopDistance;
+    public float smoothRotationSpeed;
 }

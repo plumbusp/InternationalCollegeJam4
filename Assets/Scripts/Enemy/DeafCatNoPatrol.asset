@@ -10,8 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4f14d0cc1b4afb489136163b231307c, type: 3}
-  m_Name: New EnemyParameters
+  m_Name: DeafCatNoPatrol
   m_EditorClassIdentifier: 
   DetectionTags:
   - Player
-  MouseEatingTime: 0
+  mouseEatingTime: 2
+  chaseSpeed: 5
+  normalSpeed: 3
+  deathRange: 1.5
+  patrolStopDistance: 2
+  smoothRotationSpeed: 4
