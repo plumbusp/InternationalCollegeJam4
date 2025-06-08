@@ -42,6 +42,7 @@ public class EnemyMovement : MonoBehaviour
         }
         initialEulerZ = transform.eulerAngles.z;
         initialPosition = transform.position;
+
     }
     public enum MovementState
     {
@@ -59,20 +60,10 @@ public class EnemyMovement : MonoBehaviour
         {
             if (noPatrol)
             {
-                if(Vector3.Distance(transform.position, initialPosition) > 2f)
+                if(Vector3.Distance(agent.transform.position, initialPosition) < 2f)
                 {
-                    agent.SetDestination(initialPosition);
-                    Debug.Log("Reaching If");
-                }
-                else if(Mathf.Abs(Mathf.DeltaAngle(transform.eulerAngles.z, initialEulerZ)) > 5f)
-                {
-                    float smoothLerp = Mathf.LerpAngle(initialEulerZ,transform.rotation.z, Time.deltaTime * 0.1f);
-                    transform.rotation = Quaternion.Euler(0,0, smoothLerp);
-                    Debug.Log("Reaching Else If");
-                }
-                else
-                {
-                    return;
+                    agent.transform.position = initialPosition;
+                    SmoothRotateToInitialRotation();
                 }
             }
             else if (agent.remainingDistance < patrolStopDistance)
@@ -92,6 +83,10 @@ public class EnemyMovement : MonoBehaviour
     {
         Debug.Log("Patrol");
         movementState = MovementState.none;
+        if (noPatrol)
+        {
+            agent.SetDestination(initialPosition);
+        }
     }
     public void LookAround()
     {
@@ -110,7 +105,7 @@ public class EnemyMovement : MonoBehaviour
     {
         yield return new WaitForSeconds(3f);
         LookedAroundFoundNothing?.Invoke();
-        movementState = MovementState.none;
+        Patrol();
     }
 
     private void InitializeAgent()
@@ -154,6 +149,29 @@ public class EnemyMovement : MonoBehaviour
             float targetAngle = Mathf.Atan2(agent.velocity.y, agent.velocity.x) * Mathf.Rad2Deg;
             float smoothLerp = Mathf.LerpAngle(targetAngle, currentAngle, Time.deltaTime * smoothRotationSpeed);
             transform.rotation = Quaternion.Euler(0, 0, smoothLerp);
+        }
+    }
+    private void SmoothRotateToInitialRotation()
+    {
+        if (transform.eulerAngles.z == initialEulerZ)
+        {
+            return;
+        }
+        else if (Mathf.Abs(Mathf.DeltaAngle(transform.eulerAngles.z, initialEulerZ)) < 3f)
+        {
+            transform.rotation = Quaternion.Euler(0, 0, initialEulerZ);
+            transform.position = initialPosition;
+            return;
+        }
+        else
+        {
+            float currentAngle = transform.eulerAngles.z;
+            float t = Time.deltaTime * smoothRotationSpeed;
+            if (t < 0.05f) //Avoiding extremely small numbers
+                t = 0.05f;
+            float smoothLerp = Mathf.LerpAngle(currentAngle, initialEulerZ, t);
+            transform.rotation = Quaternion.Euler(0, 0, smoothLerp);
+            //Debug.Log($"{initialEulerZ} initialEulerZ and {currentAngle} currentAngle  and {smoothLerp} smoothLerp");
         }
     }
 }
