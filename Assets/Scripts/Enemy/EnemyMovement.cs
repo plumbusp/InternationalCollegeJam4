@@ -49,13 +49,22 @@ public class EnemyMovement : MonoBehaviour
         InitializeAgent();
         InitializeWaypoints();
         agent.updateRotation = false;
+
+        //Handling no patrol situation
         if (waypoints.Count == 1)
         {
             noPatrol = true;
+            initialPosition = waypoints[0].position;
+            transform.position = initialPosition;
+            initialEulerZ = transform.eulerAngles.z;
         }
-        initialEulerZ = transform.eulerAngles.z;
-        initialPosition = transform.position;
-
+        else if(waypoints.Count == 0)
+        {
+            noPatrol = true;
+            initialPosition = transform.position;
+            initialEulerZ = transform.eulerAngles.z;
+        }
+        //Handling no patrol situation
     }
 
     private void Update()
@@ -171,7 +180,7 @@ public class EnemyMovement : MonoBehaviour
         {
             float currentAngle = transform.eulerAngles.z;
             float targetAngle = Mathf.Atan2(agent.velocity.y, agent.velocity.x) * Mathf.Rad2Deg;
-            float smoothLerp = Mathf.LerpAngle(targetAngle, currentAngle, Time.deltaTime * enemyParameters.smoothRotationSpeed);
+            float smoothLerp = Mathf.LerpAngle(currentAngle, targetAngle, Time.deltaTime * enemyParameters.smoothRotationSpeed);
             transform.rotation = Quaternion.Euler(0, 0, smoothLerp);
         }
     }
