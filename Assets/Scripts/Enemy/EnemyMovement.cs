@@ -180,6 +180,10 @@ public class EnemyMovement : MonoBehaviour
         {
             float currentAngle = transform.eulerAngles.z;
             float targetAngle = Mathf.Atan2(agent.velocity.y, agent.velocity.x) * Mathf.Rad2Deg;
+
+            if (Mathf.Abs(Mathf.DeltaAngle(currentAngle, targetAngle)) <= 0.1f) //Avoiding extremely small numbers
+                return;
+
             float smoothLerp = Mathf.LerpAngle(currentAngle, targetAngle, Time.deltaTime * enemyParameters.smoothRotationSpeed);
             transform.rotation = Quaternion.Euler(0, 0, smoothLerp);
         }

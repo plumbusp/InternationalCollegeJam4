@@ -181,7 +181,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   meshFilter: {fileID: 8908871250179157918}
-  rayCount: 20
+  rayCount: 40
   fieldOfView: 90
   distance: 50
   offset: {x: 0, y: 0, z: 0}
