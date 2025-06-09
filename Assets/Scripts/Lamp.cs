@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class Lamp : MonoBehaviour
 {
-    public Action<Collider2D> detectedTargetInShadow;
-    public Action<Collider2D> detectedTargetInLight;
+    public Action<IEnemyTarget> detectedTargetInShadow;
+    public Action<IEnemyTarget> detectedTargetInLight;
     [Header("Time Parameters")]
     [SerializeField] private float _lightSeconds = 2f;
     [SerializeField] private float _darkSeconds = 2f;
@@ -30,7 +30,8 @@ public class Lamp : MonoBehaviour
     private bool listContainsCheck;
 
     Collider2D[] overlapedColliders;
-    List<string> detectedTargets = new List<string>();
+    HashSet<IEnemyTarget> currentTargets = new HashSet<IEnemyTarget>();
+    HashSet<IEnemyTarget> targetsToDelete = new HashSet<IEnemyTarget>();
 
     private EnemyParameters enemyParameters;
 
@@ -42,31 +43,12 @@ public class Lamp : MonoBehaviour
 
         if (_triggerCollider != null)
             _triggerCollider.enabled = false;
+
     }
     public void Initialize(EnemyParameters enemyParameters)
     {
         this.enemyParameters = enemyParameters;
     }
-
-    //private void OnTriggerEnter2D(Collider2D collision)
-    //{
-    //    if (collision.tag == "Player")
-    //    {
-    //        hamster.InSafeSpot = true;
-    //        Debug.Log("Player in safe spot");
-    //    }
-
-    //}
-
-    //private void OnTriggerExit2D(Collider2D collision)
-    //{
-    //    if (collision.tag == "Player")
-    //    {
-    //        Debug.Log("Player NOT  safe spot");
-    //        hamster.InSafeSpot = false;
-    //    }
-
-    //}
 
     private void Update()
     {
@@ -74,20 +56,35 @@ public class Lamp : MonoBehaviour
             return;
 
         overlapedColliders = Physics2D.OverlapCircleAll(origin.position, checkRadius);
+        HashSet<IEnemyTarget> detectedTargets = new HashSet<IEnemyTarget>();
+
         foreach(Collider2D collider in overlapedColliders)
         {
-            targetCheck = CheckForTargetTag(collider.tag);
-            listContainsCheck = detectedTargets.Contains(collider.tag);
-            if (targetCheck && !listContainsCheck)
+            if (CheckForTargetTag(collider.tag))
             {
-                detectedTargets.Add(collider.tag);
-                detectedTargetInShadow?.Invoke(collider);
+                IEnemyTarget newTarget = collider.GetComponent<IEnemyTarget>();
+                detectedTargets.Add(newTarget);
+                if (!currentTargets.Contains(newTarget))
+                {
+                    currentTargets.Add(newTarget);
+                    detectedTargetInShadow.Invoke(newTarget);
+                }
             }
-            else if(!targetCheck && listContainsCheck)
+        }
+
+        targetsToDelete = new HashSet<IEnemyTarget>();
+
+        foreach (IEnemyTarget target in currentTargets)
+        {
+            if(!detectedTargets.Contains(target))
             {
-                detectedTargets.Remove(collider.tag);
-                detectedTargetInLight?.Invoke(collider);
+                targetsToDelete.Add(target);
             }
+        }
+        foreach (IEnemyTarget target in targetsToDelete)
+        {
+            currentTargets.Remove(target);
+            detectedTargetInLight?.Invoke(target);
         }
     }
 
@@ -114,24 +111,18 @@ public class Lamp : MonoBehaviour
         _triggerCollider.enabled = !lightOn;
         if (lightOn)
         {
-            if (overlapedColliders == null || overlapedColliders.Length ==0)
+            if (overlapedColliders == null || overlapedColliders.Length == 0)
                 return;
 
             foreach (Collider2D collider in overlapedColliders)
             {
                 if (CheckForTargetTag(collider.tag))
                 {
-                    detectedTargetInLight?.Invoke(collider);
+                    detectedTargetInLight?.Invoke(collider.GetComponent<IEnemyTarget>());
                 }
             }
         }
-        //if (_turnedOn && Vector2.Distance(transform.position, hamster.transform.position) <= checkRadius)
-        //{
-        //    Debug.Log("Hamster VON");
-        //    hamster.InSafeSpot = false;
-        //}
     }
-
     private bool CheckForTargetTag(string tagName)
     {
         if (enemyParameters.DetectionTags.Contains(tagName))
