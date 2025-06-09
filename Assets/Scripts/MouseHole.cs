@@ -32,7 +32,7 @@ public class MouseHole : MonoBehaviour
     private IEnumerator CountBeforeGo()
     {
         yield return _waitBeforeGo;
-        AudioManager.instance.PlayAudio(SFXType.Mouse);
+        //AudioManager.instance.PlayAudio(SFXType.Mouse);
         _mouse.gameObject.SetActive(true);
         _mouse.Activate(_cheeseTransform);
     }

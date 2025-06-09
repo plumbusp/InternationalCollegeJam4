@@ -47,11 +47,13 @@ public class EnemyVisionAI : IEnemyPerceptionAI
 
     private bool _detected;
     private bool _isSeeingTaget;
+    private Func<Transform, bool> detectionLimiter;
 
-    override public void Initialize(EnemyParameters enemyParameters, Transform enemyTransform)
+    override public void Initialize(EnemyParameters enemyParameters, Transform enemyTransform, Func<Transform, bool> detectionLimiter)
     {
         this.enemyParameters = enemyParameters;
         this.enemyTransform = enemyTransform;
+        this.detectionLimiter = detectionLimiter;
 
         mesh = new Mesh();
         meshFilter.mesh = mesh;
@@ -113,6 +115,22 @@ public class EnemyVisionAI : IEnemyPerceptionAI
 
             _detected = (raycastHit2D.collider != null) && (CheckForTargetTag(raycastHit2D.collider.tag));
 
+            if (_detected)
+            {
+                if (detectionLimiter(raycastHit2D.collider.transform))
+                    return;
+
+                var collidersInRange = Physics2D.OverlapCircleAll(origin, enemyParameters.deathRange);
+                foreach (var collider in collidersInRange)
+                {
+                    if (CheckForTargetTag(collider.transform.tag))
+                    {
+                        OnTargetCanBeKilled?.Invoke(collider.transform);
+                        break;
+                    }
+                }
+            }
+
             //States and events handling
             if (_detected && (_isSeeingTaget == false))
             {
@@ -127,18 +145,6 @@ public class EnemyVisionAI : IEnemyPerceptionAI
             //States and events handling
 
             //Killing Handling
-            if (_detected)
-            {
-                var collidersInRange = Physics2D.OverlapCircleAll(origin, enemyParameters.deathRange);
-                foreach (var collider in collidersInRange)
-                {
-                    if (CheckForTargetTag(collider.transform.tag))
-                    {
-                        OnTargetCanBeKilled?.Invoke(collider.transform);
-                        break;
-                    }
-                }
-            }
         }
 
         mesh.vertices = vertices;

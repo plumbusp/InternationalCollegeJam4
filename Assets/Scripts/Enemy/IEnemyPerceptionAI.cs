@@ -9,7 +9,7 @@ public abstract class IEnemyPerceptionAI: MonoBehaviour
     /// Requires constant calls to find out the current situation.
     /// </summary>
     /// 
-    public abstract void Initialize(EnemyParameters enemyParameters, Transform enemyTransform);
+    public abstract void Initialize(EnemyParameters enemyParameters, Transform enemyTransform, Func<Transform, bool> detectionLimiter);
     public abstract void Detect();
     public abstract Action<Transform> OnTargetDetected {  get; set; }
     public abstract Action OnTargetLost {  get; set; }

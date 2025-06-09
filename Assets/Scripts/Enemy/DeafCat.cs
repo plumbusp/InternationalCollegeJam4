@@ -13,7 +13,7 @@ public class DeafCat : MonoBehaviour
     //Enemy movement script 
     private void Start()
     {
-        enemyVisionAI.Initialize(deafCatParameters, transform);
+        enemyVisionAI.Initialize(deafCatParameters, transform, IsDetectionLimited);
         enemyVisionAI.isAllowedToDetect = true;
         enemyVisionAI.OnTargetDetected += (Transform target) => EnemyMovement.Chase(target);
         enemyVisionAI.OnTargetLost += EnemyMovement.LookAround;
@@ -33,5 +33,19 @@ public class DeafCat : MonoBehaviour
         Debug.Log($"Target marked as{ target.tag} was killed " );
         EnemyMovement.isAllowedToMove = false;
         enemyVisionAI.isAllowedToDetect = false;
+    }
+    /// <summary>
+    /// Returns true if detection can't be perform, false otherwise
+    /// </summary>
+    /// <param name="transform"></param>
+    /// <returns></returns>
+    private bool IsDetectionLimited(Transform transform)
+    {
+        if (transform.TryGetComponent(out IEnemyTarget enemyTarget))
+        {
+            if (enemyTarget.InSafeSpot)
+                return true;
+        }
+        return false;
     }
 }

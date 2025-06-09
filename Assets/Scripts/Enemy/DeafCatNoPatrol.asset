@@ -18,5 +18,5 @@ MonoBehaviour:
   chaseSpeed: 5
   normalSpeed: 3
   deathRange: 1.5
-  patrolStopDistance: 2
+  patrolStopDistance: 0.5
   smoothRotationSpeed: 4

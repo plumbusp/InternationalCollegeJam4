@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4f14d0cc1b4afb489136163b231307c, type: 3}
   m_Name: DeafCetLevel2
   m_EditorClassIdentifier: 
-  DetectionTags: []
-  mouseEatingTime: 0
-  chaseSpeed: 0
-  normalSpeed: 0
-  deathRange: 0
-  patrolStopDistance: 0
-  smoothRotationSpeed: 0
+  DetectionTags:
+  - Player
+  mouseEatingTime: 2
+  chaseSpeed: 4
+  normalSpeed: 2
+  deathRange: 1.5
+  patrolStopDistance: 0.5
+  smoothRotationSpeed: 3

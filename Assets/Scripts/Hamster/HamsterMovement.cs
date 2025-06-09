@@ -5,7 +5,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Animator))]
-public class HamsterMovement : MonoBehaviour, ISoundMaker
+public class HamsterMovement : MonoBehaviour, ISoundMaker, IEnemyTarget
 {
 	public event Action<Vector3> OnLoudSoundMade;
 	public event Action<Vector3> OnQuiteSoundMade;
