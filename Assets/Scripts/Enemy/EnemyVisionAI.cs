@@ -66,9 +66,6 @@ public class EnemyVisionAI : IEnemyPerceptionAI
     /// </summary>
     override public void Detect()
     {
-        if (!_isAllowedToDetect)
-            return;
-
         IsTarget = false;
 
         SetOrigin(enemyTransform.position);
@@ -113,6 +110,9 @@ public class EnemyVisionAI : IEnemyPerceptionAI
 
             mesh.RecalculateBounds();
 
+            if (!_isAllowedToDetect)
+                continue;
+
             _detected = (raycastHit2D.collider != null) && (CheckForTargetTag(raycastHit2D.collider.tag));
 
             if (_detected)
@@ -143,8 +143,6 @@ public class EnemyVisionAI : IEnemyPerceptionAI
                 _onTargetLost?.Invoke();
             }
             //States and events handling
-
-            //Killing Handling
         }
 
         mesh.vertices = vertices;
