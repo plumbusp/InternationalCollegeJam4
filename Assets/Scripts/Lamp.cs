@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class Lamp : MonoBehaviour
 {
-    public Action<IEnemyTarget> detectedTargetInShadow;
-    public Action<IEnemyTarget> detectedTargetInLight;
+    public Action<IEnemyTarget> newTargetFound;
+    public Action<IEnemyTarget> targetLost;
     [Header("Time Parameters")]
     [SerializeField] private float _lightSeconds = 2f;
     [SerializeField] private float _darkSeconds = 2f;
@@ -30,8 +30,8 @@ public class Lamp : MonoBehaviour
     private bool listContainsCheck;
 
     Collider2D[] overlapedColliders;
-    HashSet<IEnemyTarget> currentTargets = new HashSet<IEnemyTarget>();
-    HashSet<IEnemyTarget> targetsToDelete = new HashSet<IEnemyTarget>();
+    public HashSet<IEnemyTarget> currentTargetsInLamp = new HashSet<IEnemyTarget>();
+    HashSet<IEnemyTarget> targetsToDelete;
 
     private EnemyParameters enemyParameters;
 
@@ -64,17 +64,17 @@ public class Lamp : MonoBehaviour
             {
                 IEnemyTarget newTarget = collider.GetComponent<IEnemyTarget>();
                 detectedTargets.Add(newTarget);
-                if (!currentTargets.Contains(newTarget))
+                if (!currentTargetsInLamp.Contains(newTarget))
                 {
-                    currentTargets.Add(newTarget);
-                    detectedTargetInShadow.Invoke(newTarget);
+                    currentTargetsInLamp.Add(newTarget);
+                    newTargetFound.Invoke(newTarget);
                 }
             }
         }
 
         targetsToDelete = new HashSet<IEnemyTarget>();
 
-        foreach (IEnemyTarget target in currentTargets)
+        foreach (IEnemyTarget target in currentTargetsInLamp)
         {
             if(!detectedTargets.Contains(target))
             {
@@ -83,8 +83,8 @@ public class Lamp : MonoBehaviour
         }
         foreach (IEnemyTarget target in targetsToDelete)
         {
-            currentTargets.Remove(target);
-            detectedTargetInLight?.Invoke(target);
+            currentTargetsInLamp.Remove(target);
+            targetLost?.Invoke(target);
         }
     }
 
@@ -114,13 +114,11 @@ public class Lamp : MonoBehaviour
             if (overlapedColliders == null || overlapedColliders.Length == 0)
                 return;
 
-            foreach (Collider2D collider in overlapedColliders)
+            foreach (IEnemyTarget target in currentTargetsInLamp)
             {
-                if (CheckForTargetTag(collider.tag))
-                {
-                    detectedTargetInLight?.Invoke(collider.GetComponent<IEnemyTarget>());
-                }
+                newTargetFound?.Invoke(target);
             }
+            currentTargetsInLamp.Clear();
         }
     }
     private bool CheckForTargetTag(string tagName)
