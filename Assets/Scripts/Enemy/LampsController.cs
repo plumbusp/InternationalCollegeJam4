@@ -40,6 +40,9 @@ public class LampsController : MonoBehaviour
             }
         }
         if(count == 0)
+        {
             enemyTarget.InSafeSpot = false;
+            currentEnemyTargets.Remove(enemyTarget);
+        }
     }
 }

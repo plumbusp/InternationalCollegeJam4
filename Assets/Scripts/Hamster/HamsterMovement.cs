@@ -20,16 +20,21 @@ public class HamsterMovement : MonoBehaviour, ISoundMaker, IEnemyTarget
 		}
         set
         {
-			Debug.Log("In safe spot");
 			if (value == true)
-				foreach (var renderer in _SpriteRenderers)
-					renderer.color = _shadowColor;
+			{
+                Debug.Log("In safe spot");
+                foreach (var renderer in _SpriteRenderers)
+                    renderer.color = _shadowColor;
+            }
 
 			else
-				foreach (var renderer in _SpriteRenderers)
-					renderer.color = _normalColor;
+			{
+                Debug.Log("Not In safe spot");
+                foreach (var renderer in _SpriteRenderers)
+                    renderer.color = _normalColor;
 
-			_InSafeSpot = value;
+            }
+            _InSafeSpot = value;
 		}
 	}
 

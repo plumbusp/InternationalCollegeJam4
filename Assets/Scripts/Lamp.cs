@@ -114,11 +114,13 @@ public class Lamp : MonoBehaviour
             if (overlapedColliders == null || overlapedColliders.Length == 0)
                 return;
 
-            foreach (IEnemyTarget target in currentTargetsInLamp)
+            targetsToDelete = new HashSet<IEnemyTarget>(currentTargetsInLamp);
+
+            foreach (IEnemyTarget target in targetsToDelete)
             {
-                newTargetFound?.Invoke(target);
+                currentTargetsInLamp.Remove(target);
+                targetLost?.Invoke(target);
             }
-            currentTargetsInLamp.Clear();
         }
     }
     private bool CheckForTargetTag(string tagName)
