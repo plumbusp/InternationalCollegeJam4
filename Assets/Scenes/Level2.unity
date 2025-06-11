@@ -1097,6 +1097,10 @@ PrefabInstance:
       propertyPath: checkRadius
       value: 2.07
       objectReference: {fileID: 0}
+    - target: {fileID: 4697400816648671430, guid: a38267e0c6e9b9c4aaae5528340872de, type: 3}
+      propertyPath: _darkSeconds
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 6237121679539732017, guid: a38267e0c6e9b9c4aaae5528340872de, type: 3}
       propertyPath: m_Name
       value: Lamp
@@ -1119,11 +1123,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8280658879901463075, guid: a38267e0c6e9b9c4aaae5528340872de, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -4.067
+      value: -2.99
       objectReference: {fileID: 0}
     - target: {fileID: 8280658879901463075, guid: a38267e0c6e9b9c4aaae5528340872de, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 7.584
+      value: 8.68
       objectReference: {fileID: 0}
     - target: {fileID: 8280658879901463075, guid: a38267e0c6e9b9c4aaae5528340872de, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1182,6 +1186,10 @@ PrefabInstance:
     - target: {fileID: 4697400816648671430, guid: a38267e0c6e9b9c4aaae5528340872de, type: 3}
       propertyPath: checkRadius
       value: 2.07
+      objectReference: {fileID: 0}
+    - target: {fileID: 4697400816648671430, guid: a38267e0c6e9b9c4aaae5528340872de, type: 3}
+      propertyPath: _darkSeconds
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6237121679539732017, guid: a38267e0c6e9b9c4aaae5528340872de, type: 3}
       propertyPath: m_Name

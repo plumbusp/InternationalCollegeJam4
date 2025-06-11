@@ -118,7 +118,7 @@ public class EnemyVisionAI : IEnemyPerceptionAI
             if (_detected)
             {
                 if (detectionLimiter(raycastHit2D.collider.transform))
-                    return;
+                    continue;
 
                 var collidersInRange = Physics2D.OverlapCircleAll(origin, enemyParameters.deathRange);
                 foreach (var collider in collidersInRange)
@@ -152,6 +152,7 @@ public class EnemyVisionAI : IEnemyPerceptionAI
 
     private void SetOrigin(Vector3 origin)
     {
+        Debug.Log(origin);
         this.origin = origin + offset;
     }
 
