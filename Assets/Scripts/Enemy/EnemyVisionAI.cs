@@ -3,7 +3,8 @@ using CodeMonkey.Utils;
 using System;
 using UnityEngine.UIElements;
 
-public class EnemyVisionAI : IEnemyPerceptionAI
+[RequireComponent(typeof(Collider2D))]
+public class EnemyVisionAI : EnemyPerceptionAI
 {
     private Action<Transform> _onTargetDetected;
     private Action _onTargetLost;
@@ -32,6 +33,7 @@ public class EnemyVisionAI : IEnemyPerceptionAI
 
     float startAngle;
 
+    [SerializeField] Transform meshTransform;
     [SerializeField] MeshFilter meshFilter;
     [SerializeField] int rayCount = 2;
     [SerializeField] float fieldOfView = 90f;
@@ -60,7 +62,6 @@ public class EnemyVisionAI : IEnemyPerceptionAI
         _isSeeingTaget = false;
     }
 
-
     /// <summary>
     /// For smoother work should be called from LateUpdate
     /// </summary>
@@ -72,8 +73,8 @@ public class EnemyVisionAI : IEnemyPerceptionAI
         SetDirection(enemyTransform.right);
 
         // creating field of view visuals
-        transform.position = Vector3.zero;
-        transform.rotation = Quaternion.identity;
+        meshTransform.position = Vector3.zero;
+        meshTransform.rotation = Quaternion.identity;
 
         var angle = startAngle;
         var angleIncrease = fieldOfView / rayCount;
@@ -152,7 +153,6 @@ public class EnemyVisionAI : IEnemyPerceptionAI
 
     private void SetOrigin(Vector3 origin)
     {
-        Debug.Log(origin);
         this.origin = origin + offset;
     }
 
@@ -166,5 +166,13 @@ public class EnemyVisionAI : IEnemyPerceptionAI
         if (enemyParameters.DetectionTags.Contains(tagName))
             return true;
         return false;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(CheckForTargetTag(collision.transform.tag))
+        {
+            _onTargetCanBeKilled?.Invoke(collision.transform);
+        }
     }
 }

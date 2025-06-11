@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class IEnemyPerceptionAI: MonoBehaviour
+public abstract class EnemyPerceptionAI: MonoBehaviour
 {
     /// <summary>
     /// Requires constant calls to find out the current situation.
