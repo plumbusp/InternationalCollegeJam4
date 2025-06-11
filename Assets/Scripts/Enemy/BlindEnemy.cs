@@ -1,8 +1,9 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class DeafCat : Enemy
+public class BlindEnemy : Enemy
 {
-    //Enemy movement script 
     protected override void Start()
     {
         enemyPerceptionAI.Initialize(enemyParameters, transform, DetectionLimited);
@@ -14,21 +15,15 @@ public class DeafCat : Enemy
         enemyMovement.Intialize(enemyParameters);
         enemyMovement.isAllowedToMove = true;
         enemyMovement.Patrol();
-        //Subsribe on enemy catched player
     }
-    
+
     /// <summary>
     /// Returns true if detection can't be perform, false otherwise
     /// </summary>
     /// <param name="transform"></param>
     /// <returns></returns>
-    override protected bool DetectionLimited(Transform transform)
+    protected override bool DetectionLimited(Transform transform)
     {
-        if (transform.TryGetComponent(out IEnemyTarget enemyTarget))
-        {
-            if (enemyTarget.InSafeSpot)
-                return true;
-        }
-        return false;
+        return false; // Blind enemies can detect targets without limitations
     }
 }

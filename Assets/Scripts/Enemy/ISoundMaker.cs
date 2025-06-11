@@ -5,8 +5,8 @@ using UnityEngine;
 
 public interface ISoundMaker
 {
-    public event Action<Vector3> OnLoudSoundMade;
-    public event Action<Vector3> OnQuiteSoundMade;
-    public event Action<Vector3> OnSuperLoudSoundMade;
+    //public event Action<Vector3> OnLoudSoundMade;
+    //public event Action<Vector3> OnQuiteSoundMade;
+    //public event Action<Vector3> OnSuperLoudSoundMade;
 
 }

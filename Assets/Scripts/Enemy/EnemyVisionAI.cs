@@ -6,9 +6,6 @@ using UnityEngine.UIElements;
 [RequireComponent(typeof(Collider2D))]
 public class EnemyVisionAI : EnemyPerceptionAI
 {
-    private Action<Transform> _onTargetDetected;
-    private Action _onTargetLost;
-    private Action<Transform> _onTargetCanBeKilled;
     override public Action<Transform> OnTargetDetected { get => _onTargetDetected; set => _onTargetDetected = value; }
     override public Action OnTargetLost { get => _onTargetLost; set => _onTargetLost = value; }
     public override Action<Transform> OnTargetCanBeKilled { get => _onTargetCanBeKilled; set => _onTargetCanBeKilled = value; }
@@ -43,28 +40,20 @@ public class EnemyVisionAI : EnemyPerceptionAI
     [SerializeField] float noticeCoolDown;
     // Field of View Visuals
 
-    private EnemyParameters enemyParameters;
-    private Transform enemyTransform;
     public bool IsTarget { get; private set; }
 
     private bool _detected;
     private bool _isSeeingTaget;
-    private Func<Transform, bool> detectionLimiter;
 
     override public void Initialize(EnemyParameters enemyParameters, Transform enemyTransform, Func<Transform, bool> detectionLimiter)
     {
-        this.enemyParameters = enemyParameters;
-        this.enemyTransform = enemyTransform;
-        this.detectionLimiter = detectionLimiter;
+        base.Initialize(enemyParameters, enemyTransform, detectionLimiter);
 
         mesh = new Mesh();
         meshFilter.mesh = mesh;
         _isSeeingTaget = false;
     }
 
-    /// <summary>
-    /// For smoother work should be called from LateUpdate
-    /// </summary>
     override public void Detect()
     {
         IsTarget = false;
@@ -159,13 +148,6 @@ public class EnemyVisionAI : EnemyPerceptionAI
     private void SetDirection(Vector3 direction)
     {
         startAngle = MathHelper.VectorToAngle2D(direction) + fieldOfView / 2f;
-    }
-
-    private bool CheckForTargetTag(string tagName)
-    {
-        if (enemyParameters.DetectionTags.Contains(tagName))
-            return true;
-        return false;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
